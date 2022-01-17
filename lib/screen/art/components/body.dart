@@ -2,6 +2,7 @@ import 'dart:math';
 import 'dart:typed_data';
 import 'package:flutter/material.dart';
 import 'package:flutter/services.dart';
+import 'package:personal_website/utils/constant.dart';
 import 'package:personal_website/utils/models/color_pixel.dart';
 import 'loading.dart';
 import 'painter.dart';
@@ -15,17 +16,36 @@ class Body extends StatefulWidget {
 }
 
 class _BodyState extends State<Body> {
-  String? path = 'assets/img/' + (Uri.base.queryParameters['id']).toString() + '.jpg';
+  String? path =
+      'assets/img/' + (Uri.base.queryParameters['id']).toString() + '.jpg';
   @override
   Widget build(BuildContext context) {
     Size size = MediaQuery.of(context).size;
     late img.Image photo;
 
+    img.Image scaleImageCentered(img.Image source) {
+      double imageRatio = source.width / source.height;
+      double screenRatio = size.width / size.height;
+
+      img.Image resized = screenRatio > imageRatio
+          ? img.copyResize(source,
+              width: source.width * size.height ~/ source.height,
+              height: size.height.toInt())
+          : img.copyResize(source,
+              width: size.width.toInt(),
+              height: source.height * size.width ~/ source.width);
+
+      return img.drawImage(
+          img.Image(size.width.toInt(), size.height.toInt())..fill(kBackgroundColor.value), resized,
+          dstX: ((size.width.toInt() - resized.width) / 2).round(),
+          dstY: ((size.height.toInt() - resized.height) / 2).round());
+    }
+
     void setImageBytes(imageBytes) {
       List<int> values = imageBytes.buffer.asUint8List();
       photo = img.decodeImage(values)!;
-      photo = img.copyResize(photo,
-          height: size.height.toInt(), width: size.width.toInt());
+      //photo = img.copyResize(photo, height: size.height.toInt(), width: size.width.toInt());
+      photo = scaleImageCentered(photo);
     }
 
     int abgrToArgb(int argbColor) {
@@ -63,12 +83,14 @@ class _BodyState extends State<Body> {
         builder: (_, AsyncSnapshot<List<ColorPixel>> data) {
           if (data.connectionState == ConnectionState.done) {
             print(data.data);
-            return Container(
-              width: size.width,
-              height: size.height,
-              child: CustomPaint(
-                painter: Painter(pixelList: data.data!),
-                child: Container(),
+            return Center(
+              child: Container(
+                // width: size.width,
+                // height: size.height,
+                child: CustomPaint(
+                  painter: Painter(pixelList: data.data!),
+                  child: Container(),
+                ),
               ),
             );
           }
