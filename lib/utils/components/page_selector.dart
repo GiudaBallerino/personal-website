@@ -1,6 +1,5 @@
 import 'package:flutter/material.dart';
 import 'package:flutter/cupertino.dart';
-import 'package:personal_website/utils/components/sycontainer.dart';
 import 'package:personal_website/utils/models/page.dart';
 
 import '../constant.dart';
@@ -38,13 +37,14 @@ class _PageSelectorState extends State<PageSelector> {
       children:
           List<GestureDetector>.generate(widget.pagesList.length, (index) {
         return GestureDetector(
-            child: SyContainer(
+            child: Container(
               width: widget.containerWidth,
               height: widget.containerHeight,
               margin: widget.margin,
-              borderRadius: widget.borderRadius,
-              //emboss: index == pageList.length~/2,
-              emboss: index==1,
+              decoration: BoxDecoration(
+                borderRadius: BorderRadius.all(Radius.circular(20)),
+                border: index==1 ? Border.all(color: kSecondaryColor) : Border.all(color: kTextColor),
+              ),
               child: widget.pagesList[index].logo,
             ),
             onTap: () {

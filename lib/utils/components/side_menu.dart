@@ -12,12 +12,14 @@ class SideMenu extends StatefulWidget {
     required this.initColor,
     required this.initBorderRadius,
     this.initListBoxShadow,
+    this.initGradient,
     this.initChild,
     required this.finalWidth,
     required this.finalHeight,
     required this.finalColor,
     required this.finalBorderRadius,
-    //this.finalListBoxShadow, //todo non utilizzata
+    //this.finalListBoxShadow, //todo non utilizzati
+    //this.finalGradient //
     this.finalChild,
     required this.duration,
     this.childDuration,
@@ -29,14 +31,16 @@ class SideMenu extends StatefulWidget {
   final double initHeight;
   final Color initColor;
   final BorderRadiusGeometry initBorderRadius;
-  List<BoxShadow>? initListBoxShadow;
+  final List<BoxShadow>? initListBoxShadow;
+  final LinearGradient? initGradient;
   Widget? initChild;
 
   final double finalWidth;
   final double finalHeight;
   final Color finalColor;
   final BorderRadiusGeometry finalBorderRadius;
-  //List<BoxShadow>? finalListBoxShadow; todo non utilizzata
+  //final List<BoxShadow>? finalListBoxShadow; todo non utilizzati
+  //final LinearGradient? finalGradient;
   Widget? finalChild;
 
   final Duration duration;
@@ -115,6 +119,7 @@ class _SideMenuState extends State<SideMenu> with TickerProviderStateMixin {
             color: colorAnimation.value,
             borderRadius: radiusAnimation.value,
             boxShadow: widget.initListBoxShadow,
+            gradient: widget.initGradient,
           ),
           child: _nowChild != null
               ? AnimatedSwitcher(
@@ -138,6 +143,7 @@ class _SideMenuState extends State<SideMenu> with TickerProviderStateMixin {
           color: colorAnimation.value,
           borderRadius: radiusAnimation.value,
           boxShadow: widget.initListBoxShadow,
+          gradient: widget.initGradient,
         ),
         child: _nowChild != null
             ? AnimatedSwitcher(

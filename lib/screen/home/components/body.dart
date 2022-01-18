@@ -12,7 +12,7 @@ class Body extends StatefulWidget {
 class _BodyState extends State<Body> {
   List<Letter> text = [
     Letter(letter: "C", isHover: false, color: kTextColor),
-    Letter(letter: "i", isHover: false,color: kTextColor),
+    Letter(letter: "i", isHover: false, color: kTextColor),
     Letter(letter: "a", isHover: false, color: kTextColor),
     Letter(letter: "o", isHover: false, color: kTextColor),
     Letter(letter: ",", color: kTextColor),
@@ -22,7 +22,7 @@ class _BodyState extends State<Body> {
     Letter(letter: "n", isHover: false, color: kTextColor),
     Letter(letter: "o", isHover: false, color: kTextColor),
     Letter(letter: " ", color: kTextColor),
-    Letter(letter: "L", color: kDarkShadow),
+    Letter(letter: "L", color: kTertiaryColor),
     Letter(letter: "o", isHover: false, color: kTextColor),
     Letter(letter: "r", isHover: false, color: kTextColor),
     Letter(letter: "i", isHover: false, color: kTextColor),
@@ -67,12 +67,14 @@ class _BodyState extends State<Body> {
               (index) => TextSpan(
                 text: text[index].letter,
                 style: TextStyle(
-                  fontSize: size.width*0.08,
+                  fontSize: size.width * 0.08,
                   fontWeight: FontWeight.bold,
                   color: getColor(text[index]),
                 ),
-                onEnter: (_) => setState(() =>text[index].isHover =text[index].isHover!=null ?  true:null),
-                onExit: (_) => setState(() => text[index].isHover =text[index].isHover!=null ?  false:null),
+                onEnter: (_) => setState(() => text[index].isHover =
+                    text[index].isHover != null ? true : null),
+                onExit: (_) => setState(() => text[index].isHover =
+                    text[index].isHover != null ? false : null),
               ),
             )),
           ),
@@ -80,11 +82,11 @@ class _BodyState extends State<Body> {
       ),
     );
   }
-  Color getColor(Letter l){
-    if(l.isHover!=null){
-      return l.isHover! ? Colors.blue : l.color;
-    }
-    else{
+
+  Color getColor(Letter l) {
+    if (l.isHover != null) {
+      return l.isHover! ? kSecondaryColor : l.color;
+    } else {
       return l.color;
     }
   }
