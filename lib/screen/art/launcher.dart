@@ -24,23 +24,32 @@ class _LauncherState extends State<Launcher> {
   Uint8List? data;
   final SideMenuController sideController = SideMenuController();
 
-  late Pages selectedPage;
-  late List<Pages> list;
+  List<Pages> list = [
+    Pages(
+        id: "home-page",
+        name: ".home()",
+        route: "/home",
+        type: PagesType.home,
+        logo: const Icon(Icons.home, color: kTextColor)),
+    Pages(
+        id: "art",
+        name: ".art()",
+        route: "/launch",
+        type: PagesType.impress,
+        logo: const Icon(
+          Icons.brush,
+          color: kTextColor,
+        )),
+  ];
 
-  void updateSelector(Pages update) {
-    setState(() {
-      selectedPage = update;
-      reorder();
-      Navigator.pushNamed(context, selectedPage.route);
-    });
+  void navTo(Pages update) {
+      Navigator.pushNamed(context,update.route);
   }
 
   @override
   void initState() {
     _initImages();
     super.initState();
-    selectedPage = pageList[0];
-    list = pageList;
   }
 
   Future _initImages() async {
@@ -155,8 +164,8 @@ class _LauncherState extends State<Launcher> {
         ),
         SideMenu(
           controller: sideController,
-          initWidth: size.height * 0.06,
-          initHeight: size.height * 0.06,
+          initWidth: size.height * 0.07,
+          initHeight: size.height * 0.07,
           initColor: kBackgroundColor,
           initBorderRadius: const BorderRadius.only(
             topRight: Radius.circular(30),
@@ -164,23 +173,28 @@ class _LauncherState extends State<Launcher> {
             topLeft: Radius.circular(0),
             bottomRight: Radius.circular(30),
           ),
-          initListBoxShadow: const [
+          initListBoxShadow: [
             BoxShadow(
               color: kDarkShadow,
-              spreadRadius: 3,
-              blurRadius: 3,
-              offset: Offset(3, 3),
+              blurRadius: (size.height * 0.07) / 10,
+              offset:
+              Offset((size.height * 0.07) / 10, (size.height * 0.07) / 10),
             ),
             BoxShadow(
               color: kLightShadow,
-              spreadRadius: 3,
-              blurRadius: 3,
-              offset: Offset(-3, -3),
+              blurRadius: (size.height * 0.07) / 10,
+              offset: Offset(
+                  -(size.height * 0.07) / 10, -(size.height * 0.07) / 10),
             ),
           ],
+          initGradient: const LinearGradient(
+              stops: [0, 1],
+              begin: Alignment.topLeft,
+              end: Alignment.bottomRight,
+              colors: [kDarkGradient, kLightGradient]),
           //initChild: selectedPage.logo,
           initChild: list[1].logo,
-          finalWidth: size.height * 0.06,
+          finalWidth: size.height * 0.07,
           finalHeight: size.height,
           finalColor: kBackgroundColor,
           finalBorderRadius: const BorderRadius.only(
@@ -196,20 +210,13 @@ class _LauncherState extends State<Launcher> {
             margin: EdgeInsets.only(
                 left: size.width * 0.0025, top: size.height * 0.01),
             borderRadius: const BorderRadius.all(Radius.circular(30)),
-            onPageChanged: updateSelector,
+            onPageChanged: navTo,
           ),
-          duration: const Duration(milliseconds: 800),
+          duration: const Duration(milliseconds: 700),
           childDuration: const Duration(milliseconds: 500),
           childReverseDuration: const Duration(milliseconds: 500),
         ),
       ],
     );
-  }
-
-  void reorder() {
-    //todo spostare in SideMenu con controller
-    list.remove(selectedPage);
-    //list.insert(list.length ~/ 2, selectedPage);
-    list.insert(1, selectedPage);
   }
 }
