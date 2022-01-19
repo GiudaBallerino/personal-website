@@ -48,6 +48,7 @@ class SideMenu extends StatefulWidget {
   Duration? childReverseDuration;
 
   close() => createState().close();
+  open()=> createState().open();
 
   @override
   _SideMenuState createState() => _SideMenuState(controller);
@@ -56,6 +57,7 @@ class SideMenu extends StatefulWidget {
 class _SideMenuState extends State<SideMenu> with TickerProviderStateMixin {
   _SideMenuState(SideMenuController _controller) {
     _controller.close = close;
+    _controller.open=open;
   }
 
   late AnimationController controller;

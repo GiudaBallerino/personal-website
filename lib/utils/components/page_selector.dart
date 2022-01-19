@@ -35,14 +35,16 @@ class _PageSelectorState extends State<PageSelector> {
     return Column(
       mainAxisAlignment: MainAxisAlignment.center,
       children:
-          List<GestureDetector>.generate(widget.pagesList.length, (index) {
-        return GestureDetector(
+          List<MouseRegion>.generate(widget.pagesList.length, (index) {
+        return MouseRegion(
+            cursor: SystemMouseCursors.click,
+            child:GestureDetector(
             child: Container(
               width: widget.containerWidth,
               height: widget.containerHeight,
               margin: widget.margin,
               decoration: BoxDecoration(
-                borderRadius: BorderRadius.all(Radius.circular(20)),
+                borderRadius: const BorderRadius.all(Radius.circular(20)),
                 border: index==1 ? Border.all(color: kSecondaryColor) : Border.all(color: kTextColor),
               ),
               child: widget.pagesList[index].logo,
@@ -51,7 +53,7 @@ class _PageSelectorState extends State<PageSelector> {
               setState(() {
                 widget.onPageChanged(widget.pagesList[index]);
               });
-            });
+            }),);
       }),
     );
   }

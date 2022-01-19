@@ -24,14 +24,14 @@ class _HomeState extends State<Home> {
         type: PagesType.impress,
         logo: const Icon(
           Icons.brush,
-          color: kTextColor,
+          color: kBackgroundColor,
         )),
     Pages(
         id: "home-page",
         name: ".home()",
         route: "/home",
         type: PagesType.home,
-        logo: const Icon(Icons.home, color: kTextColor)),
+        logo: const Icon(Icons.home, color: kBackgroundColor)),
   ];
 
   final SideMenuController sideController = SideMenuController();
@@ -61,27 +61,13 @@ class _HomeState extends State<Home> {
           controller: sideController,
           initWidth: size.height * 0.07,
           initHeight: size.height * 0.07,
-          initColor: kBackgroundColor,
+          initColor: kTextColor,
           initBorderRadius: const BorderRadius.only(
             topRight: Radius.circular(30),
             bottomLeft: Radius.circular(30),
             topLeft: Radius.circular(0),
             bottomRight: Radius.circular(30),
           ),
-          initListBoxShadow: [
-            BoxShadow(
-              color: kDarkShadow,
-              blurRadius: (size.height * 0.07) / 10,
-              offset:
-                  Offset((size.height * 0.07) / 10, (size.height * 0.07) / 10),
-            ),
-            BoxShadow(
-              color: kLightShadow,
-              blurRadius: (size.height * 0.07) / 10,
-              offset: Offset(
-                  -(size.height * 0.07) / 10, -(size.height * 0.07) / 10),
-            ),
-          ],
           initGradient: const LinearGradient(
               stops: [0, 1],
               begin: Alignment.topLeft,
@@ -91,7 +77,7 @@ class _HomeState extends State<Home> {
           initChild: list[1].logo,
           finalWidth: size.height * 0.07,
           finalHeight: size.height,
-          finalColor: kBackgroundColor,
+          finalColor: kTextColor,
           finalBorderRadius: const BorderRadius.only(
             topRight: Radius.circular(30),
             bottomLeft: Radius.circular(0),

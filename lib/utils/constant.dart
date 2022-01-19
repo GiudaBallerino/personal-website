@@ -18,8 +18,10 @@ const kTextColor = Color(0xFFE0E5EC);
 const kBackgroundColor = Color(0xFF1d1d1d);
 const kDarkShadow = Color(0xFF191919);
 const kLightShadow = Color(0xFF212121);
-const kDarkGradient = Color(0xFF1a1a1a);
-const kLightGradient = Color(0xFF1f1f1f);
+// const kDarkGradient = Color(0xFF1a1a1a);
+// const kLightGradient = Color(0xFF1f1f1f);
+const kDarkGradient = Color(0xFFA3B1C6);
+const kLightGradient = Color(0xFFFFFFFF);
 const kSecondaryColor = Color(0xFFffae00);
 const kTertiaryColor=Color(0xFF682ae9);
 
