@@ -30,7 +30,7 @@ class _LauncherState extends State<Launcher> {
         name: ".home()",
         route: "/home",
         type: PagesType.home,
-        logo: const Icon(Icons.home, color: kTextColor)),
+        logo: const Icon(Icons.home, color: kBackgroundColor)),
     Pages(
         id: "art",
         name: ".art()",
@@ -38,12 +38,12 @@ class _LauncherState extends State<Launcher> {
         type: PagesType.impress,
         logo: const Icon(
           Icons.brush,
-          color: kTextColor,
+          color: kBackgroundColor,
         )),
   ];
 
   void navTo(Pages update) {
-      Navigator.pushNamed(context,update.route);
+    Navigator.pushNamed(context, update.route);
   }
 
   @override
@@ -69,8 +69,33 @@ class _LauncherState extends State<Launcher> {
   Widget build(BuildContext context) {
     Size size = MediaQuery.of(context).size;
 
-    double itemHeight = (size.height * 0.6) / 4;
-    double itemWidth = (size.width * 0.6) / 4;
+    double getHeight(){
+      switch (size.height > size.width) {
+        case true:
+          return size.height * 0.4;
+        case false:
+          if(size.width/size.height<1.5) return size.width * 0.7;
+          else return size.height * 0.8;
+
+      }
+      return size.height * 0.8;
+    }
+
+    double getWidth(){
+      switch (size.width>size.height) {
+        case true:
+          if(size.width/size.height<1.5) return size.width * 0.8;
+          else return size.width * 0.5;
+        case false:
+          return size.width * 0.6;
+      }
+      return size.height * 0.8;
+    }
+
+    double itemHeight =getHeight();
+    double itemWidth =getWidth();
+
+
 
     if (selectedPath != null) {
       var id = selectedPath!.split("/").last.split(".").first;
@@ -92,25 +117,15 @@ class _LauncherState extends State<Launcher> {
             height: size.height,
             child: Center(
               child: Container(
-                height: size.height * 0.6,
-                width: size.width * 0.6,
+                height: itemHeight,
+                width: itemWidth,
                 decoration: const BoxDecoration(
-                  color: kBackgroundColor,
                   borderRadius: BorderRadius.all(Radius.circular(30)),
-                  boxShadow: [
-                    BoxShadow(
-                      color: kDarkShadow,
-                      spreadRadius: 3,
-                      blurRadius: 3,
-                      offset: Offset(3, 3),
-                    ),
-                    BoxShadow(
-                      color: kLightShadow,
-                      spreadRadius: 3,
-                      blurRadius: 3,
-                      offset: Offset(-3, -3),
-                    ),
-                  ],
+                  gradient: LinearGradient(
+                      stops: [0, 1],
+                      begin: Alignment.topLeft,
+                      end: Alignment.bottomRight,
+                      colors: [kDarkGradient, kLightGradient]),
                 ),
                 child: GridView.builder(
                   itemCount: imagePaths.length,
@@ -122,23 +137,23 @@ class _LauncherState extends State<Launcher> {
                     cursor: SystemMouseCursors.click,
                     child: GestureDetector(
                       child: Container(
-                        margin: EdgeInsets.all(size.width * 0.01),
+                        margin: EdgeInsets.all(itemWidth/40),
                         decoration: BoxDecoration(
                           color: kBackgroundColor,
                           borderRadius:
                               const BorderRadius.all(Radius.circular(30)),
                           boxShadow: const [
                             BoxShadow(
-                              color: kDarkShadow,
-                              spreadRadius: 3,
-                              blurRadius: 3,
-                              offset: Offset(-3, -3),
-                            ),
-                            BoxShadow(
-                              color: kLightShadow,
+                              color: Color(0xFFA3B1C6),
                               spreadRadius: 3,
                               blurRadius: 3,
                               offset: Offset(3, 3),
+                            ),
+                            BoxShadow(
+                              color: Color(0xFFFFFFFF),
+                              spreadRadius: 3,
+                              blurRadius: 3,
+                              offset: Offset(-3, -3),
                             ),
                           ],
                           image: DecorationImage(
@@ -173,20 +188,20 @@ class _LauncherState extends State<Launcher> {
             topLeft: Radius.circular(0),
             bottomRight: Radius.circular(30),
           ),
-          initListBoxShadow: [
-            BoxShadow(
-              color: kDarkShadow,
-              blurRadius: (size.height * 0.07) / 10,
-              offset:
-              Offset((size.height * 0.07) / 10, (size.height * 0.07) / 10),
-            ),
-            BoxShadow(
-              color: kLightShadow,
-              blurRadius: (size.height * 0.07) / 10,
-              offset: Offset(
-                  -(size.height * 0.07) / 10, -(size.height * 0.07) / 10),
-            ),
-          ],
+          // initListBoxShadow: [
+          //   BoxShadow(
+          //     color: kDarkShadow,
+          //     blurRadius: (size.height * 0.07) / 10,
+          //     offset:
+          //     Offset((size.height * 0.07) / 10, (size.height * 0.07) / 10),
+          //   ),
+          //   BoxShadow(
+          //     color: kLightShadow,
+          //     blurRadius: (size.height * 0.07) / 10,
+          //     offset: Offset(
+          //         -(size.height * 0.07) / 10, -(size.height * 0.07) / 10),
+          //   ),
+          // ],
           initGradient: const LinearGradient(
               stops: [0, 1],
               begin: Alignment.topLeft,
