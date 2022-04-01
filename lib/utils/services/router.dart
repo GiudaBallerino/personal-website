@@ -1,6 +1,6 @@
 import 'package:flutter/material.dart';
 import 'package:personal_website/screen/art/art.dart';
-import 'package:personal_website/screen/art/launcher.dart';
+import 'package:personal_website/screen/launcher/launcher.dart';
 import 'package:personal_website/screen/home/home.dart';
 import 'package:personal_website/utils/models/generate_page_route.dart';
 import '../routes_name.dart';
