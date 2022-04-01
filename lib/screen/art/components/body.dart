@@ -1,9 +1,11 @@
+import 'dart:io';
 import 'dart:math';
 import 'dart:typed_data';
 import 'package:flutter/material.dart';
 import 'package:flutter/services.dart';
 import 'package:personal_website/utils/constant.dart';
 import 'package:personal_website/utils/models/color_pixel.dart';
+import 'package:personal_website/utils/services/images_service.dart';
 import 'loading.dart';
 import 'painter.dart';
 import 'package:image/image.dart' as img;
@@ -16,85 +18,56 @@ class Body extends StatefulWidget {
 }
 
 class _BodyState extends State<Body> {
-  String? path =
-      'assets/img/' + (Uri.base.queryParameters['id']).toString() + '.jpg';
+  String backgroundPath =
+      'assets/img/background/${Uri.base.queryParameters['idB']}.${Uri.base.queryParameters['extB']}';
+  String landscapePath =
+      'assets/img/landscape/${Uri.base.queryParameters['idL']}.${Uri.base.queryParameters['extL']}';
+
+  Future<List<ColorPixel>> getPixelList(Size size) async {
+    img.Image background = await ImageService().pathToImage(backgroundPath);
+    img.Image landscape = await ImageService().pathToImage(landscapePath);
+
+    background = ImageService().scaleImageCentered(
+        background,
+        max(background.width.toDouble(), landscape.width.toDouble()),
+        max(background.height.toDouble(), landscape.height.toDouble()));
+    landscape = ImageService().scaleImageCentered(
+        landscape,
+        max(background.width.toDouble(), landscape.width.toDouble()),
+        max(background.height.toDouble(), landscape.height.toDouble()));
+    img.Image merged = ImageService().scaleImageCentered(
+        ImageService().mergeImage(background, landscape),
+        size.width,
+        size.height);
+
+    return ImageService().getPixelList(merged, size.width, size.height);
+  }
+
   @override
   Widget build(BuildContext context) {
     Size size = MediaQuery.of(context).size;
-    late img.Image photo;
 
-    img.Image scaleImageCentered(img.Image source) {
-      double imageRatio = source.width / source.height;
-      double screenRatio = size.width / size.height;
-
-      img.Image resized = screenRatio > imageRatio
-          ? img.copyResize(source,
-              width: source.width * size.height ~/ source.height,
-              height: size.height.toInt())
-          : img.copyResize(source,
-              width: size.width.toInt(),
-              height: source.height * size.width ~/ source.width);
-
-      return img.drawImage(
-          img.Image(size.width.toInt(), size.height.toInt())..fill(kBackgroundColor.value), resized,
-          dstX: ((size.width.toInt() - resized.width) / 2).round(),
-          dstY: ((size.height.toInt() - resized.height) / 2).round());
-    }
-
-    void setImageBytes(imageBytes) {
-      List<int> values = imageBytes.buffer.asUint8List();
-      photo = img.decodeImage(values)!;
-      //photo = img.copyResize(photo, height: size.height.toInt(), width: size.width.toInt());
-      photo = scaleImageCentered(photo);
-    }
-
-    int abgrToArgb(int argbColor) {
-      int r = (argbColor >> 16) & 0xFF;
-      int b = argbColor & 0xFF;
-      return (argbColor & 0xFF00FF00) | (b << 16) | r;
-    }
-
-    Color getColor(int x, int y) {
-      int pixel32 = photo.getPixelSafe(x, y);
-      int hex = abgrToArgb(pixel32);
-      return Color(hex);
-    }
-
-    Future<List<ColorPixel>> _getPixelList() async {
-      Uint8List? data = null;
-      List<ColorPixel> pixelColorList = [];
-
-      data = (await rootBundle.load(path!)).buffer.asUint8List();
-
-      setImageBytes(data);
-      Random rand = Random();
-      var pX;
-      var pY;
-      for (int i = 0; i <= 100000; i++) {
-        pX = rand.nextInt(size.width.toInt());
-        pY = rand.nextInt(size.height.toInt());
-        pixelColorList.add(ColorPixel(color: getColor(pX, pY), x: pX, y: pY));
-      }
-      return pixelColorList;
-    }
-
-    return FutureBuilder(
-        future: _getPixelList(),
-        builder: (_, AsyncSnapshot<List<ColorPixel>> data) {
-          if (data.connectionState == ConnectionState.done) {
-            print(data.data);
-            return Center(
-              child: Container(
-                // width: size.width,
-                // height: size.height,
-                child: CustomPaint(
-                  painter: Painter(pixelList: data.data!),
-                  child: Container(),
-                ),
+    return FutureBuilder<List<ColorPixel>>(
+      future: getPixelList(size),
+      builder: (_, AsyncSnapshot<List<ColorPixel>> data) {
+        if (data.connectionState == ConnectionState.waiting ||
+            data.connectionState == ConnectionState.none) {
+          return Center(
+            child: CircularProgressIndicator(),
+          );
+        } else {
+          return Center(
+            child: Container(
+              // width: size.width,
+              // height: size.height,
+              child: CustomPaint(
+                painter: Painter(pixelList: data.data!),
+                child: Container(),
               ),
-            );
-          }
-          return Loading();
-        });
+            ),
+          );
+        }
+      },
+    );
   }
 }
