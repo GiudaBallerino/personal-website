@@ -9,7 +9,6 @@ import 'package:personal_website/screen/launcher/component/drawer.dart';
 import 'package:personal_website/utils/components/page_selector.dart';
 import 'package:personal_website/utils/components/side_menu.dart';
 import 'package:personal_website/utils/components/side_menu_controller.dart';
-import 'package:personal_website/utils/components/stepper.dart' as component;
 
 import 'package:personal_website/utils/constant.dart';
 import 'package:personal_website/utils/models/page.dart';
