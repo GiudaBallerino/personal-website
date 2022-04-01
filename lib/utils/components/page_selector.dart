@@ -1,15 +1,17 @@
+import 'dart:ui';
+
 import 'package:flutter/material.dart';
 import 'package:flutter/cupertino.dart';
 import 'package:personal_website/utils/models/page.dart';
 
+import '../../helper/data.dart';
 import '../constant.dart';
 
 typedef void SelectionCallback(Pages page);
 class PageSelector extends StatefulWidget {
   PageSelector({
     Key? key,
-    required this.pagesList,
-    required this.onPageChanged,
+    required this.onTap,
 
     required this.containerHeight,
     required this.containerWidth,
@@ -17,8 +19,7 @@ class PageSelector extends StatefulWidget {
     required this.borderRadius,
   }) : super(key: key);
 
-  List<Pages> pagesList;
-  final SelectionCallback onPageChanged;
+  final SelectionCallback onTap;
 
   final double containerHeight;
   final double containerWidth;
@@ -34,24 +35,28 @@ class _PageSelectorState extends State<PageSelector> {
   Widget build(BuildContext context) {
     return Column(
       mainAxisAlignment: MainAxisAlignment.center,
+      crossAxisAlignment: CrossAxisAlignment.center,
       children:
-          List<MouseRegion>.generate(widget.pagesList.length, (index) {
+          List<MouseRegion>.generate(PagesData().list.length, (index) {
         return MouseRegion(
             cursor: SystemMouseCursors.click,
             child:GestureDetector(
             child: Container(
               width: widget.containerWidth,
               height: widget.containerHeight,
-              margin: widget.margin,
+              alignment: Alignment.center,
               decoration: BoxDecoration(
                 borderRadius: const BorderRadius.all(Radius.circular(20)),
-                border: index==1 ? Border.all(color: kSecondaryColor) : Border.all(color: kTextColor),
               ),
-              child: widget.pagesList[index].logo,
+              child:Text(
+                PagesData().list[index].name,
+                textAlign: TextAlign.center,
+                style: TextStyle(fontWeight: FontWeight.bold),
+              ),
             ),
             onTap: () {
               setState(() {
-                widget.onPageChanged(widget.pagesList[index]);
+                widget.onTap(PagesData().list[index]);
               });
             }),);
       }),

@@ -55,7 +55,7 @@ class _BodyState extends State<Body> {
     return Container(
       width: size.width,
       height: size.height,
-      margin: EdgeInsets.only(left: size.height * 0.1),
+      padding: EdgeInsets.only(left: size.width*0.15),
       child: Column(
         mainAxisAlignment: MainAxisAlignment.center,
         crossAxisAlignment: CrossAxisAlignment.start,

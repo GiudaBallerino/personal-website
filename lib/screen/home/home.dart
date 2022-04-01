@@ -1,6 +1,7 @@
-import 'dart:html';
+import 'dart:ui';
 
 import 'package:flutter/material.dart';
+import 'package:personal_website/helper/data.dart';
 import 'package:personal_website/screen/home/components/body.dart' as home;
 import 'package:personal_website/utils/components/page_selector.dart';
 import 'package:personal_website/utils/components/side_menu.dart';
@@ -16,29 +17,7 @@ class Home extends StatefulWidget {
 }
 
 class _HomeState extends State<Home> {
-  List<Pages> list = [
-    Pages(
-        id: "art",
-        name: ".art()",
-        route: "/launch",
-        type: PagesType.impress,
-        logo: const Icon(
-          Icons.brush,
-          color: kBackgroundColor,
-        )),
-    Pages(
-        id: "home-page",
-        name: ".home()",
-        route: "/home",
-        type: PagesType.home,
-        logo: const Icon(Icons.home, color: kBackgroundColor)),
-  ];
-
   final SideMenuController sideController = SideMenuController();
-
-  void navTo(Pages update) {
-      Navigator.pushNamed(context,update.route);
-  }
 
   @override
   Widget build(BuildContext context) {
@@ -59,7 +38,7 @@ class _HomeState extends State<Home> {
         ),
         SideMenu(
           controller: sideController,
-          initWidth: size.height * 0.07,
+          initWidth: size.height * 0.15,
           initHeight: size.height * 0.07,
           initColor: kTextColor,
           initBorderRadius: const BorderRadius.only(
@@ -74,8 +53,11 @@ class _HomeState extends State<Home> {
               end: Alignment.bottomRight,
               colors: [kDarkGradient, kLightGradient]),
           //initChild: selectedPage.logo,
-          initChild: list[1].logo,
-          finalWidth: size.height * 0.07,
+          initChild: Text(
+            PagesData().list[1].name,
+            style: TextStyle(fontWeight: FontWeight.bold),
+          ),
+          finalWidth: size.height * 0.15,
           finalHeight: size.height,
           finalColor: kTextColor,
           finalBorderRadius: const BorderRadius.only(
@@ -85,13 +67,12 @@ class _HomeState extends State<Home> {
             bottomRight: Radius.circular(30),
           ),
           finalChild: PageSelector(
-            pagesList: list,
             containerHeight: size.height * 0.05,
-            containerWidth: size.height * 0.05,
+            containerWidth: size.height * 0.15,
             margin: EdgeInsets.only(
                 left: size.width * 0.0025, top: size.height * 0.01),
             borderRadius: const BorderRadius.all(Radius.circular(30)),
-            onPageChanged: navTo,
+            onTap: (page) => Navigator.pushNamed(context, page.route),
           ),
           duration: const Duration(milliseconds: 700),
           childDuration: const Duration(milliseconds: 500),
