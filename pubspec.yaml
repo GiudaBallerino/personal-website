@@ -37,6 +37,7 @@ dependencies:
   image:
   image_pixels:
   get_it:
+  shared_preferences: ^2.0.13
 
 dev_dependencies:
   flutter_test:
@@ -64,6 +65,7 @@ flutter:
   assets:
     - assets/img/background/
     - assets/img/landscape/
+    - assets/img/sticker/
 
 
   # An image asset can refer to one or more resolution-specific "variants", see
