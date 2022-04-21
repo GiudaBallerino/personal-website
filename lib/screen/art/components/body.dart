@@ -1,3 +1,4 @@
+import 'dart:convert';
 import 'dart:io';
 import 'dart:math';
 import 'dart:typed_data';
@@ -6,6 +7,7 @@ import 'package:flutter/services.dart';
 import 'package:personal_website/utils/constant.dart';
 import 'package:personal_website/utils/models/color_pixel.dart';
 import 'package:personal_website/utils/services/images_service.dart';
+import 'package:shared_preferences/shared_preferences.dart';
 import 'loading.dart';
 import 'painter.dart';
 import 'package:image/image.dart' as img;
@@ -18,35 +20,20 @@ class Body extends StatefulWidget {
 }
 
 class _BodyState extends State<Body> {
-  String backgroundPath =
-      'assets/img/background/${Uri.base.queryParameters['idB']}.${Uri.base.queryParameters['extB']}';
-  String landscapePath =
-      'assets/img/landscape/${Uri.base.queryParameters['idL']}.${Uri.base.queryParameters['extL']}';
 
   Future<List<ColorPixel>> getPixelList(Size size) async {
-    img.Image background = await ImageService().pathToImage(backgroundPath);
-    img.Image landscape = await ImageService().pathToImage(landscapePath);
+    final prefs = await SharedPreferences.getInstance();
+    Uint8List bytes = Base64Decoder().convert(prefs.getString('genImg')!);
+    img.Image image = img.decodeImage(bytes)!;
 
-    background = ImageService().scaleImageCentered(
-        background,
-        max(background.width.toDouble(), landscape.width.toDouble()),
-        max(background.height.toDouble(), landscape.height.toDouble()));
-    landscape = ImageService().scaleImageCentered(
-        landscape,
-        max(background.width.toDouble(), landscape.width.toDouble()),
-        max(background.height.toDouble(), landscape.height.toDouble()));
-    img.Image merged = ImageService().scaleImageCentered(
-        ImageService().mergeImage(background, landscape),
-        size.width,
-        size.height);
+    image = ImageService().scaleImageCentered(image, size.width, size.height);
 
-    return ImageService().getPixelList(merged, size.width, size.height);
+    return ImageService().getPixelList(image, size.width, size.height);
   }
 
   @override
   Widget build(BuildContext context) {
     Size size = MediaQuery.of(context).size;
-
     return FutureBuilder<List<ColorPixel>>(
       future: getPixelList(size),
       builder: (_, AsyncSnapshot<List<ColorPixel>> data) {
