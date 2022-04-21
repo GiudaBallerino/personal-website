@@ -2,24 +2,17 @@ import 'package:flutter/material.dart';
 import 'models/page.dart';
 
 //DEFAULT COLOR
-// const kTextColor = Color(0xFF2a1e59);
-//const kBackgroundColor = Color(0xFFE0E5EC);
-// const kDarkShadow = Color(0xFFA3B1C6);
-// const kLightShadow = Color(0xFFFFFFFF);
 
-// const kTextColor = Color(0xFFE0E5EC);
-// const kBackgroundColor = Color(0xFF1b5e4f);
-// const kDarkShadow = Color(0xFF175043);
-// const kLightShadow = Color(0xFF1f6c5b);
-// const kDarkGradient = Color(0xFF185557);
-// const kLightGradient = Color(0xFF1d6555);
+//const kTextColor = Color(0xFFE0E5EC);
+//const kBackgroundColor = Color(0xFF1d1d1d);
+const kTextColor = Color(0xFF686868);
+const kBackgroundColor = Color(0xFFdbdbdb);
+const kAltBackgroundColor = Color(0xFFeeedeb);
+const kPrimaryColor = Color(0xFFf03138);
+const kDisabledColor =Color(0xFF7d7e80);
 
-const kTextColor = Color(0xFFE0E5EC);
-const kBackgroundColor = Color(0xFF1d1d1d);
 const kDarkShadow = Color(0xFF191919);
 const kLightShadow = Color(0xFF212121);
-// const kDarkGradient = Color(0xFF1a1a1a);
-// const kLightGradient = Color(0xFF1f1f1f);
 const kDarkGradient = Color(0xFFA3B1C6);
 const kLightGradient = Color(0xFFFFFFFF);
 const kSecondaryColor = Color(0xFFffae00);
