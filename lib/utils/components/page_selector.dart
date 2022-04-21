@@ -48,11 +48,7 @@ class _PageSelectorState extends State<PageSelector> {
               decoration: BoxDecoration(
                 borderRadius: const BorderRadius.all(Radius.circular(20)),
               ),
-              child:Text(
-                PagesData().list[index].name,
-                textAlign: TextAlign.center,
-                style: TextStyle(fontWeight: FontWeight.bold),
-              ),
+              child:PagesData().list[index].logo,
             ),
             onTap: () {
               setState(() {
