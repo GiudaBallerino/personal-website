@@ -1,3 +1,4 @@
+import 'dart:convert';
 import 'dart:io';
 import 'dart:math';
 import 'dart:typed_data';
@@ -22,6 +23,12 @@ class ImageService {
     img.copyInto(mergedImage, image2,dstX: 0,dstY:0,blend: true);
 
     return mergedImage;
+  }
+
+  img.Image? base64ToImage(String base64){
+    Uint8List bytes=Base64Decoder().convert(base64);
+
+    return img.decodeImage(bytes);
   }
 
   img.Image scaleImageCentered(img.Image source, double width, double height) {
