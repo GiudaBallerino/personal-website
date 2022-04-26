@@ -6,7 +6,7 @@ import 'package:personal_website/utils/components/editable_image.dart';
 import 'package:shared_preferences/shared_preferences.dart';
 
 import '../../../utils/constant.dart';
-import '../../../utils/models/image_setting.dart';
+import '../../../models/image_setting.dart';
 import 'dart:io';
 import 'dart:typed_data';
 import 'dart:ui' as ui;
@@ -38,9 +38,15 @@ class Manager extends StatefulWidget {
 
 class _ManagerState extends State<Manager> {
   bool isLoading = false;
-  Mode mode = Mode.none;
+  Mode mode= Mode.none;
   final GlobalKey _globalKey = GlobalKey();
   ImageSetting? selected;
+
+  @override
+  void initState() {
+    super.initState();
+  }
+
 
   Future _captureBase64() async {
     RenderRepaintBoundary boundary =
@@ -59,12 +65,12 @@ class _ManagerState extends State<Manager> {
       height: widget.height,
       child: Column(
         children: [
-          Spacer(),
+          const Spacer(),
           Row(
             children: [
-              Spacer(),
+              const Spacer(),
               Padding(
-                padding: EdgeInsets.symmetric(horizontal: 5, vertical: 10),
+                padding: const EdgeInsets.symmetric(horizontal: 5, vertical: 10),
                 child: InkWell(
                   onTap: () {
                     if (mode == Mode.edit) {
@@ -72,7 +78,9 @@ class _ManagerState extends State<Manager> {
                         mode = Mode.none;
                       });
                     } else {
-                      mode = Mode.edit;
+                      setState(() {
+                        mode = Mode.edit;
+                      });
                     }
                     widget.onChange(mode);
                   },
@@ -94,15 +102,17 @@ class _ManagerState extends State<Manager> {
                 ),
               ),
               Padding(
-                padding: EdgeInsets.symmetric(horizontal: 5, vertical: 10),
+                padding: const EdgeInsets.symmetric(horizontal: 5, vertical: 10),
                 child: InkWell(
                   onTap: () {
                     if (mode == Mode.add) {
                       setState(() {
                         mode = Mode.none;
                       });
-                    } else {
-                      mode = Mode.add;
+                    } else{
+                      setState(() {
+                        mode = Mode.add;
+                      });
                     }
                     widget.onChange(mode);
                   },
@@ -123,7 +133,7 @@ class _ManagerState extends State<Manager> {
                   ),
                 ),
               ),
-              Spacer(),
+              const Spacer(),
             ],
           ),
           Container(
@@ -134,8 +144,8 @@ class _ManagerState extends State<Manager> {
               borderRadius: BorderRadius.circular(20),
             ),
             child: widget.images.isEmpty
-                ? Center(
-                    child: Text('Seleziona un immagine'),
+                ? const Center(
+                    child: const Text('Seleziona un immagine'),
                   )
                 : ClipRRect(
                     borderRadius: BorderRadius.circular(20),
@@ -144,67 +154,6 @@ class _ManagerState extends State<Manager> {
                       child: Stack(
                         children: [
                           for (ImageSetting image in widget.images)
-                            // Positioned(
-                            //   left: image.x,
-                            //   top: image.y,
-                            //   child: Draggable(
-                            //     feedback: Transform.rotate(
-                            //       angle: image.rotation * (pi / 180),
-                            //       child: Opacity(
-                            //         opacity: image.opacity / 100,
-                            //         child: Image.asset(
-                            //           image.path,
-                            //           fit: BoxFit.cover,
-                            //           width: min(
-                            //               image.width,
-                            //               image.width /
-                            //                   (image.width /
-                            //                       (widget.width * 0.4))),
-                            //           height: min(
-                            //               image.height,
-                            //               image.height /
-                            //                   (image.height /
-                            //                       (widget.width * 0.4))),
-                            //         ),
-                            //       ),
-                            //     ),
-                            //     childWhenDragging: Container(),
-                            //     child: Transform.rotate(
-                            //       angle: image.rotation * (pi / 180),
-                            //       child: Opacity(
-                            //         opacity: image.opacity / 100,
-                            //         child: Image.asset(
-                            //           image.path,
-                            //           fit: BoxFit.cover,
-                            //           width: min(
-                            //               image.width,
-                            //               image.width /
-                            //                   (image.width /
-                            //                       (widget.width * 0.4))),
-                            //           height: min(
-                            //               image.height,
-                            //               image.height /
-                            //                   (image.height /
-                            //                       (widget.width * 0.4))),
-                            //         ),
-                            //       ),
-                            //     ),
-                            //     onDragEnd: (dragDatails) {
-                            //       RenderBox renderBox = context.findRenderObject() as RenderBox;
-                            //       Offset offset=renderBox.globalToLocal(dragDatails.offset);
-                            //       print(dragDatails.offset);
-                            //       print(offset);
-                            //       setState(() {
-                            //         image.x=offset.dx;
-                            //         image.y=offset.dy;
-                            //         // image.x = dragDatails.offset.dx -
-                            //         //     (widget.width * 0.3357);
-                            //         // image.y = dragDatails.offset.dy -
-                            //         //     (widget.height * 0.076);
-                            //       });
-                            //     },
-                            //   ),
-                            // ),
                             Positioned(
                               left: image.x,
                               top: image.y,
@@ -223,8 +172,8 @@ class _ManagerState extends State<Manager> {
                                                 (widget.width * 0.4)))),
                                 onDragEnd: (offset) {
                                   setState(() {
-                                    image.x+=offset.dx;
-                                    image.y+=offset.dy;
+                                    image.x += offset.dx;
+                                    image.y += offset.dy;
                                   });
                                 },
                               ),
@@ -235,31 +184,31 @@ class _ManagerState extends State<Manager> {
                   ),
           ),
           Padding(
-            padding: EdgeInsets.symmetric(vertical: 10),
+            padding: const EdgeInsets.symmetric(vertical: 10),
             child: ElevatedButton(
               onPressed: () {
-                        _captureBase64().then((value) {
-                          SharedPreferences.getInstance().then((prefs) {
-                            prefs.setString('genImg', value).then((f) {
-                              html.window.open('/art', '_blank');
-                              setState(() {
-                                isLoading = false;
-                              });
-                            });
-                          });
-                        });
+                _captureBase64().then((value) {
+                  SharedPreferences.getInstance().then((prefs) {
+                    prefs.setString('genImg', value).then((f) {
+                      html.window.open('/art', '_blank');
+                      setState(() {
+                        isLoading = false;
+                      });
+                    });
+                  });
+                });
               },
               style: ElevatedButton.styleFrom(
-                shape: StadiumBorder(),
+                shape: const StadiumBorder(),
                 primary: kPrimaryColor,
               ),
-              child: Text(
+              child: const Text(
                 "Procedi",
-                style: TextStyle(fontSize: 20),
+                style: const TextStyle(fontSize: 20),
               ),
             ),
           ),
-          Spacer(),
+          const Spacer(),
         ],
       ),
     );

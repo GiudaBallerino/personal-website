@@ -1,7 +1,7 @@
 import 'package:flutter/material.dart';
 import 'package:personal_website/utils/constant.dart';
 
-import '../../../utils/models/image_setting.dart';
+import '../../../models/image_setting.dart';
 
 typedef void WidthCallback(double width);
 typedef void HeightCallback(double height);
