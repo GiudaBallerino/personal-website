@@ -1,31 +1,24 @@
 import 'dart:convert';
-import 'dart:math';
-import 'dart:typed_data';
-import 'dart:html' as html;
 import 'dart:ui';
 
 import 'package:flutter/material.dart';
 import 'package:flutter/services.dart';
-import 'package:personal_website/screen/launcher/component/editor.dart';
-import 'package:personal_website/screen/launcher/component/filter.dart';
-import 'package:personal_website/screen/launcher/component/manager.dart';
-import 'package:personal_website/screen/launcher/component/layers.dart';
+import 'package:personal_website/screen/launcher/components/editor.dart';
+import 'package:personal_website/screen/launcher/components/filter.dart';
+import 'package:personal_website/screen/launcher/components/manager.dart';
+import 'package:personal_website/screen/launcher/components/layers.dart';
 import 'package:personal_website/utils/components/page_selector.dart';
 import 'package:personal_website/utils/components/side_menu.dart';
 import 'package:personal_website/utils/components/side_menu_controller.dart';
 
 import 'package:personal_website/utils/constant.dart';
-import 'package:personal_website/screen/launcher/component/drawer.dart'
+import 'package:personal_website/screen/launcher/components/drawer.dart'
     as component;
 
 import '../../helper/data.dart';
-import '../../utils/models/image_setting.dart';
+import '../../models/image_setting.dart';
 
-enum Mode {
-  add,
-  edit,
-  none,
-}
+enum Mode { add, edit, none }
 
 class Launcher extends StatefulWidget {
   const Launcher({Key? key}) : super(key: key);
@@ -117,12 +110,6 @@ class _LauncherState extends State<Launcher> {
             topLeft: Radius.circular(0),
             bottomRight: Radius.circular(10),
           ),
-          // initGradient: const LinearGradient(
-          //     stops: [0, 1],
-          //     begin: Alignment.topLeft,
-          //     end: Alignment.bottomRight,
-          //     colors: [kDarkShadow, kLightShadow]),
-          //initChild: selectedPage.logo,
           initChild: PagesData().list[0].logo,
           finalWidth: size.height * 0.07,
           finalHeight: size.height * 0.2,
@@ -151,43 +138,102 @@ class _LauncherState extends State<Launcher> {
           },
           child: Stack(
             children: [
-              if (selected != null && mode == Mode.edit)
+              Manager(
+                width: size.width - (size.height * 0.07),
+                height: size.height,
+                images: images,
+                platform: getPlatform(),
+                onChange: (selection) {
+                  setState(() {
+                    mode = selection;
+                  });
+                },
+              ),
+              if (mode == Mode.edit) ...[
                 Positioned(
-                  left: 0,
-                  child: Editor(
+                  right: 0,
+                  child: Layers(
                     width: size.width * 0.25,
                     height: size.height,
-                    widthController:
-                        TextEditingController(text: selected!.width.toString()),
-                    heightController: TextEditingController(
-                        text: selected!.height.toString()),
-                    opacityController: TextEditingController(
-                        text: selected!.opacity.toString()),
-                    rotationController: TextEditingController(
-                        text: selected!.rotation.toString()),
-                    onWidthChange: (width) {
+                    images: images,
+                    onReorder: (list) {
                       setState(() {
-                        images[images.indexOf(selected!)].width = width;
+                        images = list;
                       });
                     },
-                    onHeightChange: (height) {
+                    onTap: (img) {
                       setState(() {
-                        images[images.indexOf(selected!)].height = height;
-                      });
-                    },
-                    onOpacityChange: (opacity) {
-                      setState(() {
-                        images[images.indexOf(selected!)].opacity = opacity;
-                      });
-                    },
-                    onRotationChange: (rotation) {
-                      setState(() {
-                        images[images.indexOf(selected!)].rotation = rotation;
+                        selected = img;
                       });
                     },
                   ),
-                )
-              else if (mode == Mode.add)
+                ),
+                if (selected != null)
+                  Positioned(
+                    left: 0,
+                    child: Editor(
+                      width: size.width * 0.25,
+                      height: size.height,
+                      widthController: TextEditingController(
+                          text: selected!.width.toString()),
+                      heightController: TextEditingController(
+                          text: selected!.height.toString()),
+                      opacityController: TextEditingController(
+                          text: selected!.opacity.toString()),
+                      rotationController: TextEditingController(
+                          text: selected!.rotation.toString()),
+                      onWidthChange: (width) {
+                        setState(() {
+                          images[images.indexOf(selected!)].width = width;
+                        });
+                      },
+                      onHeightChange: (height) {
+                        setState(() {
+                          images[images.indexOf(selected!)].height = height;
+                        });
+                      },
+                      onOpacityChange: (opacity) {
+                        setState(() {
+                          images[images.indexOf(selected!)].opacity = opacity;
+                        });
+                      },
+                      onRotationChange: (rotation) {
+                        setState(() {
+                          images[images.indexOf(selected!)].rotation = rotation;
+                        });
+                      },
+                    ),
+                  ),
+              ],
+              if (mode == Mode.add) ...[
+                Positioned(
+                  right: 0,
+                  child: component.Drawer(
+                    width: size.width * 0.25,
+                    height: size.height,
+                    pathList: imagePaths,
+                    selectedPaths: List.generate(
+                        images.length, (index) => images[index].path),
+                    onTap: (path) {
+                      setState(() {
+                        images.any((element) => element.path == path)
+                            ? images
+                                .removeWhere((element) => element.path == path)
+                            : images.add(
+                                ImageSetting(
+                                  path: path,
+                                  x: 0,
+                                  y: 0,
+                                  width: 1000,
+                                  height: 1000,
+                                  opacity: 100,
+                                  rotation: 0,
+                                ),
+                              );
+                      });
+                    },
+                  ),
+                ),
                 Positioned(
                   left: 0,
                   child: Filter(
@@ -226,137 +272,7 @@ class _LauncherState extends State<Launcher> {
                     },
                   ),
                 ),
-              Manager(
-                width: size.width - (size.height * 0.07),
-                height: size.height,
-                images: images,
-                platform: getPlatform(),
-                onChange: (selection) {
-                  setState(() {
-                    mode = selection;
-                  });
-                },
-              ),
-              // Padding(
-              //   padding: EdgeInsets.symmetric(vertical: 5),
-              //   child: Container(
-              //     width: (size.width * 0.80) - 45,
-              //     height: size.width * 0.03 + 20,
-              //     padding: EdgeInsets.symmetric(horizontal: 20),
-              //     decoration: const BoxDecoration(
-              //       borderRadius: BorderRadius.all(Radius.circular(30)),
-              //       gradient: LinearGradient(
-              //           stops: [0, 1],
-              //           begin: Alignment.topLeft,
-              //           end: Alignment.bottomRight,
-              //           colors: [kDarkGradient, kLightGradient]),
-              //     ),
-              //     child: ListView.builder(
-              //       shrinkWrap: true,
-              //       scrollDirection: Axis.horizontal,
-              //       itemCount: ImageCategory().list.length,
-              //       padding: EdgeInsets.symmetric(vertical: 5),
-              //       itemBuilder: (BuildContext context, int index) {
-              //         return Padding(
-              //           padding: EdgeInsets.symmetric(horizontal: 5),
-              //           child: InkWell(
-              //             onTap: () {
-              //               if (ImageCategory().list[index] == 'tutte') {
-              //                 setState(() {
-              //                   imagePaths = backgroundPaths +
-              //                       landscapePaths +
-              //                       stickerPaths;
-              //                   selectedCategory =
-              //                       ImageCategory().list[index];
-              //                 });
-              //               } else if (ImageCategory().list[index] ==
-              //                   'background') {
-              //                 setState(() {
-              //                   imagePaths = backgroundPaths;
-              //                   selectedCategory =
-              //                       ImageCategory().list[index];
-              //                 });
-              //               } else if (ImageCategory().list[index] ==
-              //                   'paesaggi') {
-              //                 setState(() {
-              //                   imagePaths = landscapePaths;
-              //                   selectedCategory =
-              //                       ImageCategory().list[index];
-              //                 });
-              //               } else if (ImageCategory().list[index] ==
-              //                   'sticker') {
-              //                 setState(() {
-              //                   imagePaths = stickerPaths;
-              //                   selectedCategory =
-              //                       ImageCategory().list[index];
-              //                 });
-              //               }
-              //             },
-              //             child: Chip(
-              //               backgroundColor: selectedCategory ==
-              //                       ImageCategory().list[index]
-              //                   ? kTertiaryColor
-              //                   : kSecondaryColor,
-              //               label: Text(
-              //                 ImageCategory().list[index],
-              //                 textAlign: TextAlign.center,
-              //                 style: TextStyle(
-              //                   color: selectedCategory ==
-              //                           ImageCategory().list[index]
-              //                       ? kSecondaryColor
-              //                       : kTertiaryColor,
-              //                 ),
-              //               ),
-              //             ),
-              //           ),
-              //         );
-              //       },
-              //     ),
-              //   ),
-              // ),
-              if (mode != Mode.none)
-                Positioned(
-                  right: 0,
-                  child: mode == Mode.edit
-                      ? Layers(
-                          width: size.width * 0.25,
-                          height: size.height,
-                          images: images,
-                          onReorder: (list) {
-                            setState(() {
-                              images = list;
-                            });
-                          },
-                          onTap: (img) {
-                            setState(() {
-                              selected = img;
-                            });
-                          },
-                        )
-                      : component.Drawer(
-                          width: size.width * 0.25,
-                          height: size.height,
-                          pathList: imagePaths,
-                          selectedPaths: List.generate(
-                              images.length, (index) => images[index].path),
-                          onTap: (path) {
-                            setState(() {
-                              images.any((element) => element.path == path)
-                                  ? images.removeWhere(
-                                      (element) => element.path == path)
-                                  : images.add(ImageSetting(
-                                      path: path,
-                                      x: 0,
-                                      y: 0,
-                                      width: 1000,
-                                      height: 1000,
-                                      opacity: 100,
-                                      rotation: 0,
-                                    ));
-                            });
-                          },
-                        ),
-                )
+              ]
             ],
           ),
         ),
