@@ -1,8 +1,9 @@
 import 'package:flutter/material.dart';
 import 'package:personal_website/screen/art/art.dart';
+import 'package:personal_website/screen/builder/builder.dart' as screen;
 import 'package:personal_website/screen/launcher/launcher.dart';
 import 'package:personal_website/screen/home/home.dart';
-import 'package:personal_website/utils/models/generate_page_route.dart';
+import 'package:personal_website/models/generate_page_route.dart';
 import '../routes_name.dart';
 
 
@@ -12,10 +13,13 @@ import '../routes_name.dart';
         widget: Home(), routeName: settings.name!);
     } else if(settings.name!.contains(RoutesName.ART)) {
       return GeneratePageRoute(
-        widget: Art(), routeName: settings.name!);
+        widget: const Art(), routeName: settings.name!);
     } else if(settings.name==RoutesName.LAUCHER) {
       return GeneratePageRoute(
-            widget: Launcher(), routeName: settings.name!);
+            widget: const Launcher(), routeName: settings.name!);
+    } else if(settings.name==RoutesName.BUILDER) {
+      return GeneratePageRoute(
+          widget: const screen.Builder(), routeName: settings.name!);
     } else {
       return GeneratePageRoute(
             widget: Home(), routeName: settings.name!);
