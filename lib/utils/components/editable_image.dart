@@ -1,7 +1,7 @@
 import 'dart:math';
 
 import 'package:flutter/material.dart';
-import 'package:personal_website/utils/models/image_setting.dart';
+import 'package:personal_website/models/image_setting.dart';
 
 class EditableImage extends StatelessWidget {
   EditableImage({Key? key, required this.onDragEnd, required this.image, required this.size})

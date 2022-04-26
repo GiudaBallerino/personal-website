@@ -2,7 +2,7 @@ import 'dart:ui';
 
 import 'package:flutter/material.dart';
 import 'package:flutter/cupertino.dart';
-import 'package:personal_website/utils/models/page.dart';
+import 'package:personal_website/models/page.dart';
 
 import '../../helper/data.dart';
 import '../constant.dart';

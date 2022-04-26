@@ -8,7 +8,9 @@ import 'package:flutter/material.dart';
 
 import 'package:image/image.dart' as img;
 
-import '../models/color_pixel.dart';
+import '../../models/color_pixel.dart';
+
+
 
 class ImageService {
   Future pathToImage(String path) async {

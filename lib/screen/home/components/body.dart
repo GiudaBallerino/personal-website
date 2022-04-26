@@ -1,5 +1,5 @@
 import 'package:flutter/material.dart';
-import 'package:personal_website/utils/models/letter.dart';
+import 'package:personal_website/models/letter.dart';
 import 'package:personal_website/utils/constant.dart';
 
 class Body extends StatefulWidget {

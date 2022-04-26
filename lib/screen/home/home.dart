@@ -7,7 +7,7 @@ import 'package:personal_website/utils/components/page_selector.dart';
 import 'package:personal_website/utils/components/side_menu.dart';
 import 'package:personal_website/utils/components/side_menu_controller.dart';
 import 'package:personal_website/utils/constant.dart';
-import 'package:personal_website/utils/models/page.dart';
+import 'package:personal_website/models/page.dart';
 
 class Home extends StatefulWidget {
   Home({Key? key}) : super(key: key);
@@ -39,23 +39,17 @@ class _HomeState extends State<Home> {
           controller: sideController,
           initWidth: size.height * 0.07,
           initHeight: size.height * 0.07,
-          initColor: kBackgroundColor,
+          initColor: kAltBackgroundColor,
           initBorderRadius: const BorderRadius.only(
             topRight: Radius.circular(10),
             bottomLeft: Radius.circular(10),
             topLeft: Radius.circular(0),
             bottomRight: Radius.circular(10),
           ),
-          initGradient: const LinearGradient(
-              stops: [0, 1],
-              begin: Alignment.topLeft,
-              end: Alignment.bottomRight,
-              colors: [kDarkShadow, kLightShadow]),
-          //initChild: selectedPage.logo,
           initChild: PagesData().list[1].logo,
           finalWidth: size.height * 0.07,
-          finalHeight: size.height*0.2,
-          finalColor: kTextColor,
+          finalHeight: size.height * 0.2,
+          finalColor: kAltBackgroundColor,
           finalBorderRadius: const BorderRadius.only(
             topRight: Radius.circular(10),
             bottomLeft: Radius.circular(0),

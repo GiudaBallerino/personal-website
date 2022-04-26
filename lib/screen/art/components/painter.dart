@@ -1,7 +1,7 @@
 import 'dart:math';
 
 import 'package:flutter/material.dart';
-import 'package:personal_website/utils/models/color_pixel.dart';
+import 'package:personal_website/models/color_pixel.dart';
 
 class Painter extends CustomPainter {
   final List<ColorPixel> pixelList;

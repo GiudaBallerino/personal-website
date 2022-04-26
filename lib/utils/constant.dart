@@ -1,5 +1,6 @@
 import 'package:flutter/material.dart';
-import 'models/page.dart';
+
+import '../models/page.dart';
 
 //DEFAULT COLOR
 

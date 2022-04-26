@@ -5,7 +5,7 @@ import 'dart:typed_data';
 import 'package:flutter/material.dart';
 import 'package:flutter/services.dart';
 import 'package:personal_website/utils/constant.dart';
-import 'package:personal_website/utils/models/color_pixel.dart';
+import 'package:personal_website/models/color_pixel.dart';
 import 'package:personal_website/utils/services/images_service.dart';
 import 'package:shared_preferences/shared_preferences.dart';
 import 'loading.dart';
