@@ -31,22 +31,21 @@ class ImageCategory {
 class Furniture {
   List<WidgetFurniture> list = [
     ContainerFurniture(
-      id: 0,
       type: WidgetType.container,
       icon: Icons.crop_din,
       selected: false,
-      width: 100,
-      height: 20,
-      color: kPrimaryColor,
+      widget: Container(
+        width: 100,
+        height: 100,
+      ),
     ),
     RowFurniture(
-      id: 0,
       type: WidgetType.row,
       icon: Icons.table_rows,
       selected: false,
-      crossAxisAlignment: CrossAxisAlignment.center,
-      mainAxisAlignment: MainAxisAlignment.spaceAround,
-      mainAxisSize: MainAxisSize.min,
+      widget: Row(
+        children: [],
+      ),
     ),
   ];
 }
