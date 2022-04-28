@@ -1,11 +1,10 @@
 import 'dart:ui';
 
 import 'package:flutter/material.dart';
-import 'package:json_dynamic_widget/json_dynamic_widget.dart';
 import 'package:personal_website/models/widget_furniture.dart';
 import 'package:personal_website/screen/builder/components/element_sectrion.dart';
+import 'package:personal_website/screen/builder/components/render_furniture_widget.dart';
 import 'package:personal_website/utils/services/builder_service.dart';
-
 import '../../utils/constant.dart';
 
 enum Menu {
@@ -24,8 +23,10 @@ class _BuilderState extends State<Builder> with TickerProviderStateMixin {
   int id = 0;
   late TabController _tabController;
   Menu menu = Menu.widget;
+  Widget? selected = null;
+  List<Widget> widgetList = [];
 
-  List<WidgetFurniture> widgetList = [];
+  //List<WidgetFurniture> widgetList = [];
 
   Map<String, dynamic> widgetJson = {
     "type": "single_child_scroll_view",
@@ -44,6 +45,7 @@ class _BuilderState extends State<Builder> with TickerProviderStateMixin {
   @override
   Widget build(BuildContext context) {
     Size size = MediaQuery.of(context).size;
+    //print(wid.)
     return Row(
       children: [
         Container(
@@ -55,8 +57,8 @@ class _BuilderState extends State<Builder> with TickerProviderStateMixin {
           ),
           child: DragTarget<WidgetFurniture>(
             builder: (context, candidateData, rejectedData) {
-              List<Map<String, dynamic>> mainTree=BuilderService().getWidgetMainTree(widgetJson);
-              if (mainTree.isEmpty) {
+              //List<Map<String, dynamic>> mainTree=BuilderService().getWidgetMainTree(widgetJson);
+              if (widgetList.isEmpty) {
                 return const Center(
                   child: Text(
                     'Drag and Drop',
@@ -70,93 +72,121 @@ class _BuilderState extends State<Builder> with TickerProviderStateMixin {
                 return SingleChildScrollView(
                   child: Column(
                     children: [
-                      for (Map<String, dynamic> widget in mainTree)
-                        if (widget["type"] == "container")
-                          InkWell(
-                            child: Container(
-                              width: size.width * ((widgetList.singleWhere((element) => element.id==widget["id"]) as ContainerFurniture).width / 100),
-                              height: size.height * ((widgetList.singleWhere((element) => element.id==widget["id"]) as ContainerFurniture).height / 100),
-                              decoration: BoxDecoration(
-                                color: (widgetList.singleWhere((element) => element.id==widget["id"]) as ContainerFurniture).color,
-                                border: Border.all(
-                                  color: widgetList.singleWhere((element) => element.id==widget["id"]).selected
-                                      ? kPrimaryColor
-                                      : kDisabledColor,
-                                  width: 3,
-                                ),
-                              ),
-                            ),
+                      for (Widget widget in widgetList)
+                        if (widget.runtimeType == Container)
+                          RenderWidget(
+                            furniture: widget as Container,
+                            selected: selected,
                             onTap: () {
-                              //print(widgetJson);
-                              //print(widget["id"]);
+                              if (selected == widget) {
+                                setState(() {
+                                  selected = null;
+                                });
+                              } else {
+                                setState(() {
+                                  selected = widget;
+                                });
+                              }
+                            },
+                            onAccept: (data) {
+                              Widget child;
+                              switch (data.type) {
+                                case WidgetType.container:
+                                  child = Container(
+                                    width: (data as ContainerFurniture)
+                                        .widget
+                                        .constraints
+                                        ?.maxWidth,
+                                    height:
+                                        (data).widget.constraints?.maxHeight,
+                                    color: Colors.red,
+                                  );
+                                  break;
+                                case WidgetType.row:
+                                  child = (data as RowFurniture).widget;
+                                  break;
+                                default:
+                                  child = Container(
+                                    width: (data as ContainerFurniture)
+                                        .widget
+                                        .constraints
+                                        ?.maxWidth,
+                                    height:
+                                        (data).widget.constraints?.maxHeight,
+                                    color: Colors.red,
+                                  );
+                                  break;
+                              }
+
+                              Container parent = Container(
+                                width: (widgetList[widgetList.indexOf(widget)]
+                                        as Container)
+                                    .constraints
+                                    ?.maxWidth,
+                                height: (widgetList[widgetList.indexOf(widget)]
+                                        as Container)
+                                    .constraints
+                                    ?.maxHeight,
+                                child: child,
+                              );
+
                               setState(() {
-                                if (widgetList.singleWhere((element) => element.id==widget["id"]).selected) {
-                                  widgetList[widgetList.indexOf(widgetList.singleWhere((element) => element.id==widget["id"]))]
-                                      .selected = false;
-                                } else {
-                                  widgetList.forEach((element) {
-                                    if (element.selected) {
-                                      widgetList[widgetList.indexOf(element)]
-                                          .selected = false;
-                                    }
-                                  });
-                                  widgetList[widgetList.indexOf(widgetList.singleWhere((element) => element.id==widget["id"]))]
-                                      .selected = true;
-                                }
+                                widgetList[widgetList.indexOf(widget)] = parent;
                               });
                             },
                           )
-                        else if (widget["type"] == "row")
-                          DragTarget<WidgetFurniture>(
-                            builder: (context, candidateData, rejectedData) {
-                              return InkWell(
-                                child: Row(
-                                  crossAxisAlignment: (widgetList.singleWhere((element) => element.id==widget["id"]) as RowFurniture).crossAxisAlignment,
-                                  mainAxisAlignment:(widgetList.singleWhere((element) => element.id==widget["id"]) as RowFurniture).mainAxisAlignment,
-                                  mainAxisSize:(widgetList.singleWhere((element) => element.id==widget["id"]) as RowFurniture).mainAxisSize,
-                                  children: [
-                                    Container(
-                                      width: size.width * 0.5,
-                                      height: size.height * 0.2,
-                                      decoration: BoxDecoration(
-                                        border: Border.all(
-                                          color: widgetList.singleWhere((element) => element.id==widget["id"]).selected
-                                              ? kPrimaryColor
-                                              : kDisabledColor,
-                                          width: 3,
-                                        ),
-                                      ),
-                                    ),
-                                  ],
-                                ),
-                                onTap: () {
-                                  //print(widgetJson);
-                                  //print(widget.id);
-                                  print(BuilderService().getWidgetTreeFromId(widgetJson,widget["id"]));
-                                  setState(() {
-                                    if (widgetList.singleWhere((element) => element.id==widget["id"]).selected) {
-                                      widgetList[widgetList.indexOf(widgetList.singleWhere((element) => element.id==widget["id"]))]
-                                          .selected = false;
-                                    } else {
-                                      widgetList.forEach((element) {
-                                        if (element.selected) {
-                                          widgetList[widgetList.indexOf(element)]
-                                              .selected = false;
-                                        }
-                                      });
-                                      widgetList[widgetList.indexOf(widgetList.singleWhere((element) => element.id==widget["id"]))]
-                                          .selected = true;
-                                    }
-                                  });
-                                },
-                              );
+                        else if (widget.runtimeType == Row)
+                          RenderWidget(
+                            furniture: widget as Row,
+                            selected: selected,
+                            onTap: () {
+                              print(widget);
+                              if (selected == widget) {
+                                setState(() {
+                                  selected = null;
+                                });
+                              } else {
+                                setState(() {
+                                  selected = widget;
+                                });
+                              }
                             },
-                            onWillAccept: (data) => true,
                             onAccept: (data) {
+                              Widget child;
+                              switch (data.type) {
+                                case WidgetType.container:
+                                  child = Container(
+                                    width: (data as ContainerFurniture)
+                                        .widget
+                                        .constraints
+                                        ?.maxWidth,
+                                    height:
+                                        (data).widget.constraints?.maxHeight,
+                                    color: Colors.red,
+                                  );
+                                  break;
+                                case WidgetType.row:
+                                  child = (data as RowFurniture).widget;
+                                  break;
+                                default:
+                                  child = Container(
+                                    width: (data as ContainerFurniture)
+                                        .widget
+                                        .constraints
+                                        ?.maxWidth,
+                                    height:
+                                        (data).widget.constraints?.maxHeight,
+                                    color: Colors.red,
+                                  );
+                                  break;
+                              }
+                              Row parent =
+                                  (widgetList[widgetList.indexOf(widget)]
+                                      as Row);
+
+                              parent.children.add(child);
                               setState(() {
-                                widgetJson=BuilderService().addToRowFromId(widget["id"], id, widgetJson, data);
-                                widgetList.add(data);
-                                id++;
+                                widgetList[widgetList.indexOf(widget)] = parent;
                               });
                             },
                           ),
@@ -168,9 +198,11 @@ class _BuilderState extends State<Builder> with TickerProviderStateMixin {
             onWillAccept: (data) => true,
             onAccept: (data) {
               setState(() {
-                widgetJson=BuilderService().addToMainColumn(id, widgetJson, data);
-                widgetList.add(data);
-                id++;
+                if (data.runtimeType == ContainerFurniture) {
+                  widgetList.add((data as ContainerFurniture).widget);
+                } else if (data.runtimeType == RowFurniture) {
+                  widgetList.add((data as RowFurniture).widget);
+                }
               });
             },
           ),
