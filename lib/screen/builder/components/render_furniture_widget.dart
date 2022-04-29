@@ -7,116 +7,120 @@ class RenderWidget extends StatefulWidget {
   RenderWidget(
       {Key? key,
       required this.furniture,
+      this.maxWidth,
       required this.selected,
+      required this.fit,
       required this.onTap,
-      required this.onAccept})
+      this.onAccept})
       : super(key: key);
 
   Widget furniture;
+  final double? maxWidth;
   final Widget? selected;
-  Function() onTap;
-  Function(WidgetFurniture) onAccept;
+  final FlexFit fit;
+  Function(Widget) onTap;
+  Function(WidgetFurniture)? onAccept;
 
   @override
   State<RenderWidget> createState() => _RenderWidgetState();
 }
 
 class _RenderWidgetState extends State<RenderWidget> {
-
   @override
   Widget build(BuildContext context) {
-    if (widget.furniture.runtimeType == Container){
-      Container container=widget.furniture as Container;
-      return DragTarget<WidgetFurniture>(
-        builder: (context, candidateData, rejectedData) {
-          return InkWell(
-            child: Container(
-              width: container.constraints?.maxWidth ?? 100,
-              height: container.constraints?.maxHeight ?? 100,
-              padding: EdgeInsets.all(5),
-              decoration: BoxDecoration(
-                color: container.color,
-                border: Border.all(
-                  color: widget.selected==widget.furniture ? kPrimaryColor : kDisabledColor,
-                  width: 3,
-                ),
+    Size size = MediaQuery.of(context).size;
+    if (widget.furniture.runtimeType == Flexible) {
+      Container container = (widget.furniture as Flexible).child as Container;
+      //Container container = widget.furniture as Container;
+      return Flexible(
+        fit: widget.fit,
+        child: InkWell(
+          child: Container(
+            //width: container.constraints?.maxWidth,
+            //height: container.constraints?.maxHeight,
+            padding: EdgeInsets.all(5),
+            decoration: BoxDecoration(
+              color: container.color,
+              border: Border.all(
+                color: widget.selected == widget.furniture
+                    ? kPrimaryColor
+                    : kDisabledColor,
+                width: 3,
               ),
-              child: getRenderChild(container.child),
             ),
-            onTap: () =>widget.onTap(),
-          );
-        },
-        onWillAccept: (data) {
-          if (container.child == null) {
-            return true;
-          } else {
-            return false;
-          }
-        },
-        onAccept: (data) =>widget.onAccept(data),
+            child: container.child,
+          ),
+          onTap: () => widget.onTap(widget.furniture),
+        ),
       );
-    }
-    else if(widget.furniture.runtimeType == Row){
-      Row row=widget.furniture as Row;
+    } else if (widget.furniture.runtimeType == Row) {
+      Row row = widget.furniture as Row;
       return DragTarget<WidgetFurniture>(
         builder: (context, candidateData, rejectedData) {
           return InkWell(
             child: Container(
               constraints: BoxConstraints(
-                minHeight: 100,
-                minWidth: 700,
+                minHeight: size.height * 0.20,
+                maxHeight: size.height,
               ),
+              width: widget.maxWidth,
+              //height: size.height * 0.20,
               padding: EdgeInsets.all(5),
               decoration: BoxDecoration(
                 border: Border.all(
-                  color: widget.selected==widget.furniture
+                  color: widget.selected == widget.furniture
                       ? kPrimaryColor
                       : kDisabledColor,
                   width: 3,
                 ),
               ),
               child: Row(
-                crossAxisAlignment: row.crossAxisAlignment,
-                mainAxisAlignment: row.mainAxisAlignment,
-                mainAxisSize: row.mainAxisSize,
+                //crossAxisAlignment: CrossAxisAlignment.stretch,
+                mainAxisAlignment: MainAxisAlignment.center,
+                mainAxisSize: MainAxisSize.min,
                 children: [
-                  for(Widget child in row.children)
-                    getRenderChild(child)!,
+                  for (Widget child in row.children)
+                    getRenderChild(child, row.children.length)!,
                 ],
+                //children: row.children,
               ),
             ),
-            onTap: () =>widget.onTap(),
+            onTap: () => widget.onTap(widget.furniture),
           );
         },
-        onWillAccept: (data) =>true,
-        onAccept: (data) =>widget.onAccept(data),
+        onWillAccept: (data) {
+          if (data?.type == WidgetType.row) {
+            return false;
+          } else {
+            return true;
+          }
+        },
+        onAccept: (data) => widget.onAccept!(data),
       );
-    }
-    else{
+    } else {
       return Container();
     }
   }
 
-  Widget? getRenderChild(Widget? child){
-    if (child.runtimeType == Container)
+  Widget? getRenderChild(Widget? child, int childrenLenght) {
+    if (child.runtimeType == Flexible) {
       return RenderWidget(
-        furniture: child as Container,
+        furniture: child as Flexible,
+        fit: FlexFit.tight,
         selected: widget.selected,
-        onTap: () =>widget.onTap(),
-        onAccept: (data) {},
+        onTap: (data) => widget.onTap(data),
       );
-    else if (child.runtimeType == Row)
+    } else if (child.runtimeType == Row) {
       return RenderWidget(
+        maxWidth: (widget.maxWidth! - 16) / childrenLenght,
         furniture: child as Row,
+        fit: FlexFit.tight,
         selected: widget.selected,
-        onTap: () =>widget.onTap(),
-        onAccept: (data) {},
+        onTap: (data) => widget.onTap(data),
+        onAccept: (data) => widget.onAccept!(data),
       );
-    else if(child==null){
+    } else {
       return null;
-    }
-    else{
-      return Container();
     }
   }
 }
