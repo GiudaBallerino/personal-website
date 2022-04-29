@@ -71,122 +71,75 @@ class _BuilderState extends State<Builder> with TickerProviderStateMixin {
               } else {
                 return SingleChildScrollView(
                   child: Column(
+                    mainAxisSize: MainAxisSize.min,
+                    crossAxisAlignment: CrossAxisAlignment.stretch,
                     children: [
                       for (Widget widget in widgetList)
-                        if (widget.runtimeType == Container)
+                        if (widget.runtimeType == Flexible)
                           RenderWidget(
-                            furniture: widget as Container,
+                            maxWidth: size.width * 0.5,
+                            furniture: widget as Flexible,
                             selected: selected,
-                            onTap: () {
-                              if (selected == widget) {
+                            fit: FlexFit.loose,
+                            onTap: (data) {
+                              if (selected == data) {
                                 setState(() {
                                   selected = null;
                                 });
                               } else {
                                 setState(() {
-                                  selected = widget;
+                                  selected = data;
                                 });
                               }
-                            },
-                            onAccept: (data) {
-                              Widget child;
-                              switch (data.type) {
-                                case WidgetType.container:
-                                  child = Container(
-                                    width: (data as ContainerFurniture)
-                                        .widget
-                                        .constraints
-                                        ?.maxWidth,
-                                    height:
-                                        (data).widget.constraints?.maxHeight,
-                                    color: Colors.red,
-                                  );
-                                  break;
-                                case WidgetType.row:
-                                  child = (data as RowFurniture).widget;
-                                  break;
-                                default:
-                                  child = Container(
-                                    width: (data as ContainerFurniture)
-                                        .widget
-                                        .constraints
-                                        ?.maxWidth,
-                                    height:
-                                        (data).widget.constraints?.maxHeight,
-                                    color: Colors.red,
-                                  );
-                                  break;
-                              }
-
-                              Container parent = Container(
-                                width: (widgetList[widgetList.indexOf(widget)]
-                                        as Container)
-                                    .constraints
-                                    ?.maxWidth,
-                                height: (widgetList[widgetList.indexOf(widget)]
-                                        as Container)
-                                    .constraints
-                                    ?.maxHeight,
-                                child: child,
-                              );
-
-                              setState(() {
-                                widgetList[widgetList.indexOf(widget)] = parent;
-                              });
                             },
                           )
                         else if (widget.runtimeType == Row)
                           RenderWidget(
+                            maxWidth: size.width * 0.5,
                             furniture: widget as Row,
                             selected: selected,
-                            onTap: () {
-                              print(widget);
-                              if (selected == widget) {
+                            fit: FlexFit.loose,
+                            onTap: (data) {
+                              if (selected == data) {
                                 setState(() {
                                   selected = null;
                                 });
                               } else {
                                 setState(() {
-                                  selected = widget;
+                                  selected = data;
                                 });
                               }
                             },
                             onAccept: (data) {
                               Widget child;
+
                               switch (data.type) {
-                                case WidgetType.container:
-                                  child = Container(
-                                    width: (data as ContainerFurniture)
-                                        .widget
-                                        .constraints
-                                        ?.maxWidth,
-                                    height:
-                                        (data).widget.constraints?.maxHeight,
-                                    color: Colors.red,
+                                case WidgetType.text:
+                                  child = Flexible(
+                                    fit: FlexFit.loose,
+                                    child: Container(
+                                      child: Text(
+                                          'Lorem ipsum dolor sit amet, consectetur adipiscing elit. Quisque et lectus diam. Aenean pellentesque nibh ut ultrices ornare. Curabitur non arcu eleifend, venenatis mauris non, tincidunt velit. '),
+                                    ),
+                                  );
+                                  break;
+                                case WidgetType.image:
+                                  child = Flexible(
+                                    fit: FlexFit.loose,
+                                    child: Container(
+                                      child: Image.asset(
+                                          'assets/img/sticker/flower_0.webp'),
+                                    ),
                                   );
                                   break;
                                 case WidgetType.row:
-                                  child = (data as RowFurniture).widget;
-                                  break;
-                                default:
-                                  child = Container(
-                                    width: (data as ContainerFurniture)
-                                        .widget
-                                        .constraints
-                                        ?.maxWidth,
-                                    height:
-                                        (data).widget.constraints?.maxHeight,
-                                    color: Colors.red,
-                                  );
+                                  child = Row();
                                   break;
                               }
-                              Row parent =
-                                  (widgetList[widgetList.indexOf(widget)]
-                                      as Row);
-
-                              parent.children.add(child);
                               setState(() {
-                                widgetList[widgetList.indexOf(widget)] = parent;
+                                (widgetList[widgetList.indexOf(widget)] as Row)
+                                    .children
+                                    .add(child);
                               });
                             },
                           ),
@@ -197,12 +150,33 @@ class _BuilderState extends State<Builder> with TickerProviderStateMixin {
             },
             onWillAccept: (data) => true,
             onAccept: (data) {
+              Widget widget;
+              switch (data.type) {
+                case WidgetType.text:
+                  widget = Flexible(
+                    fit: FlexFit.loose,
+                    child: Container(
+                      child: Text(
+                          'Lorem ipsum dolor sit amet, consectetur adipiscing elit. Quisque et lectus diam. Aenean pellentesque nibh ut ultrices ornare. Curabitur non arcu eleifend, venenatis mauris non, tincidunt velit. '),
+                    ),
+                  );
+                  break;
+                case WidgetType.image:
+                  widget = Flexible(
+                    fit: FlexFit.loose,
+                    child: Container(
+                      child: Image.asset('assets/img/sticker/flower_0.webp'),
+                    ),
+                  );
+                  break;
+                case WidgetType.row:
+                  widget = Row(
+                    children: [],
+                  );
+                  break;
+              }
               setState(() {
-                if (data.runtimeType == ContainerFurniture) {
-                  widgetList.add((data as ContainerFurniture).widget);
-                } else if (data.runtimeType == RowFurniture) {
-                  widgetList.add((data as RowFurniture).widget);
-                }
+                widgetList.add(widget);
               });
             },
           ),
