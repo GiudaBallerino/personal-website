@@ -29,23 +29,20 @@ class ImageCategory {
 }
 
 class Furniture {
-  List<WidgetFurniture> list = [
-    ContainerFurniture(
-      type: WidgetType.container,
-      icon: Icons.crop_din,
-      selected: false,
-      widget: Container(
-        width: 100,
-        height: 100,
-      ),
-    ),
-    RowFurniture(
+  List<WidgetFurniture> layout = [
+    WidgetFurniture(
       type: WidgetType.row,
       icon: Icons.table_rows,
-      selected: false,
-      widget: Row(
-        children: [],
-      ),
+    ),
+  ];
+  List<WidgetFurniture> content = [
+    WidgetFurniture(
+      type: WidgetType.text,
+      icon: Icons.text_fields,
+    ),
+    WidgetFurniture(
+      type: WidgetType.image,
+      icon: Icons.image,
     ),
   ];
 }
