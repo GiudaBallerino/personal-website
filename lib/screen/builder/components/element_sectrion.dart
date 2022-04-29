@@ -26,7 +26,22 @@ class ElementSection extends StatelessWidget {
               spacing: 10,
               runSpacing: 10,
               children: [
-                for (WidgetFurniture widget in Furniture().list)
+                for (WidgetFurniture widget in Furniture().layout)
+                  FurnitureItem(furniture: widget),
+              ],
+            ),
+          ),
+          Text(
+            "Content Element",
+            style: TextStyle(fontSize: 20, fontWeight: FontWeight.bold),
+          ),
+          Padding(
+            padding: EdgeInsets.symmetric(vertical: 20),
+            child: Wrap(
+              spacing: 10,
+              runSpacing: 10,
+              children: [
+                for (WidgetFurniture widget in Furniture().content)
                   FurnitureItem(furniture: widget),
               ],
             ),
