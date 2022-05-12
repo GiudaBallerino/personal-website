@@ -1,5 +1,6 @@
 import 'dart:convert';
 import 'dart:math';
+import 'package:flutter/foundation.dart';
 
 import 'package:flutter/material.dart';
 import 'package:personal_website/utils/components/editable_image.dart';
@@ -23,14 +24,14 @@ class Manager extends StatefulWidget {
     Key? key,
     required this.width,
     required this.height,
+    required this.color,
     required this.images,
-    required this.platform,
     required this.onChange,
   }) : super(key: key);
   final double width;
   final double height;
+  final Color color;
   List<ImageSetting> images;
-  String platform;
   SelectionCallback onChange;
   @override
   _ManagerState createState() => _ManagerState();
@@ -38,7 +39,7 @@ class Manager extends StatefulWidget {
 
 class _ManagerState extends State<Manager> {
   bool isLoading = false;
-  Mode mode= Mode.none;
+  Mode mode = Mode.none;
   final GlobalKey _globalKey = GlobalKey();
   ImageSetting? selected;
 
@@ -46,7 +47,6 @@ class _ManagerState extends State<Manager> {
   void initState() {
     super.initState();
   }
-
 
   Future _captureBase64() async {
     RenderRepaintBoundary boundary =
@@ -60,157 +60,326 @@ class _ManagerState extends State<Manager> {
 
   @override
   Widget build(BuildContext context) {
-    return SizedBox(
-      width: widget.width,
-      height: widget.height,
-      child: Column(
-        children: [
-          const Spacer(),
-          Row(
-            children: [
-              const Spacer(),
-              Padding(
-                padding: const EdgeInsets.symmetric(horizontal: 5, vertical: 10),
-                child: InkWell(
-                  onTap: () {
-                    if (mode == Mode.edit) {
-                      setState(() {
-                        mode = Mode.none;
-                      });
-                    } else {
-                      setState(() {
-                        mode = Mode.edit;
-                      });
-                    }
-                    widget.onChange(mode);
-                  },
-                  child: Container(
-                    width: 52,
-                    height: 52,
-                    decoration: BoxDecoration(
-                      color: kBackgroundColor,
-                      border: mode == Mode.edit
-                          ? Border.all(color: kPrimaryColor, width: 5)
-                          : null,
-                      borderRadius: BorderRadius.circular(100),
-                    ),
-                    child: Icon(
-                      Icons.settings,
-                      color: mode == Mode.edit ? kPrimaryColor : kDisabledColor,
-                    ),
-                  ),
-                ),
+    if ((defaultTargetPlatform == TargetPlatform.iOS ||
+        defaultTargetPlatform == TargetPlatform.android)) {
+      return SizedBox(
+        width: widget.width,
+        height: widget.height,
+        child: Column(
+          children: [
+            Container(
+              width: widget.width,
+              height: widget.width,
+              decoration: BoxDecoration(
+                color: widget.color,
+                borderRadius:
+                    BorderRadius.vertical(bottom: Radius.circular(20)),
               ),
-              Padding(
-                padding: const EdgeInsets.symmetric(horizontal: 5, vertical: 10),
-                child: InkWell(
-                  onTap: () {
-                    if (mode == Mode.add) {
-                      setState(() {
-                        mode = Mode.none;
-                      });
-                    } else{
-                      setState(() {
-                        mode = Mode.add;
-                      });
-                    }
-                    widget.onChange(mode);
-                  },
-                  child: Container(
-                    width: 52,
-                    height: 52,
-                    decoration: BoxDecoration(
-                      color: kBackgroundColor,
-                      border: mode == Mode.add
-                          ? Border.all(color: kPrimaryColor, width: 5)
-                          : null,
-                      borderRadius: BorderRadius.circular(100),
-                    ),
-                    child: Icon(
-                      Icons.add,
-                      color: mode == Mode.add ? kPrimaryColor : kDisabledColor,
-                    ),
-                  ),
-                ),
-              ),
-              const Spacer(),
-            ],
-          ),
-          Container(
-            width: widget.width * 0.4,
-            height: widget.width * 0.4,
-            decoration: BoxDecoration(
-              color: kBackgroundColor,
-              borderRadius: BorderRadius.circular(20),
-            ),
-            child: widget.images.isEmpty
-                ? const Center(
-                    child: const Text('Seleziona un immagine'),
-                  )
-                : ClipRRect(
-                    borderRadius: BorderRadius.circular(20),
-                    child: RepaintBoundary(
-                      key: _globalKey,
-                      child: Stack(
-                        children: [
-                          for (ImageSetting image in widget.images)
-                            Positioned(
-                              left: image.x,
-                              top: image.y,
-                              child: EditableImage(
-                                image: image,
-                                size: Size(
-                                    min(
-                                        image.width,
-                                        image.width /
-                                            (image.width /
-                                                (widget.width * 0.4))),
-                                    min(
-                                        image.height,
-                                        image.height /
-                                            (image.height /
-                                                (widget.width * 0.4)))),
-                                onDragEnd: (offset) {
-                                  setState(() {
-                                    image.x += offset.dx;
-                                    image.y += offset.dy;
-                                  });
-                                },
+              child: widget.images.isEmpty
+                  ? const Center(
+                      child: const Text('Aggiungi un immagine'),
+                    )
+                  : ClipRRect(
+                      borderRadius: BorderRadius.vertical(bottom:Radius.circular(20)),
+                      child: RepaintBoundary(
+                        key: _globalKey,
+                        child: Stack(
+                          children: [
+                            for (ImageSetting image in widget.images)
+                              Positioned(
+                                left: image.x,
+                                top: image.y,
+                                child: EditableImage(
+                                  image: image,
+                                  size: Size(
+                                      min(
+                                          image.width,
+                                          image.width /
+                                              (image.width / widget.width)),
+                                      min(
+                                          image.height,
+                                          image.height /
+                                              (image.height / widget.width))),
+                                  onDragEnd: (offset) {
+                                    setState(() {
+                                      image.x += offset.dx;
+                                      image.y += offset.dy;
+                                    });
+                                  },
+                                ),
                               ),
-                            ),
-                        ],
+                          ],
+                        ),
+                      ),
+                    ),
+            ),
+            Row(
+              children: [
+                const Spacer(),
+                Padding(
+                  padding:
+                      const EdgeInsets.symmetric(horizontal: 5, vertical: 10),
+                  child: InkWell(
+                    onTap: () {
+                      if (mode == Mode.edit) {
+                        setState(() {
+                          mode = Mode.none;
+                        });
+                      } else {
+                        setState(() {
+                          mode = Mode.edit;
+                        });
+                      }
+                      widget.onChange(mode);
+                    },
+                    child: Container(
+                      width: widget.height * 0.07,
+                      height: widget.height * 0.07,
+                      decoration: BoxDecoration(
+                        color: widget.color,
+                        border: mode == Mode.edit
+                            ? Border.all(color: kPrimaryColor, width: 5)
+                            : null,
+                        borderRadius: BorderRadius.circular(100),
+                      ),
+                      child: Icon(
+                        Icons.settings,
+                        color:
+                            mode == Mode.edit ? kPrimaryColor : kDisabledColor,
                       ),
                     ),
                   ),
-          ),
-          Padding(
-            padding: const EdgeInsets.symmetric(vertical: 10),
-            child: ElevatedButton(
-              onPressed: () {
-                _captureBase64().then((value) {
-                  SharedPreferences.getInstance().then((prefs) {
-                    prefs.setString('genImg', value).then((f) {
-                      html.window.open('/art', '_blank');
-                      setState(() {
-                        isLoading = false;
+                ),
+                Padding(
+                  padding:
+                      const EdgeInsets.symmetric(horizontal: 5, vertical: 10),
+                  child: InkWell(
+                    onTap: () {
+                      if (mode == Mode.add) {
+                        setState(() {
+                          mode = Mode.none;
+                        });
+                      } else {
+                        setState(() {
+                          mode = Mode.add;
+                        });
+                      }
+                      widget.onChange(mode);
+                    },
+                    child: Container(
+                      width: widget.height * 0.07,
+                      height: widget.height * 0.07,
+                      decoration: BoxDecoration(
+                        color: widget.color,
+                        border: mode == Mode.add
+                            ? Border.all(color: kPrimaryColor, width: 5)
+                            : null,
+                        borderRadius: BorderRadius.circular(100),
+                      ),
+                      child: Icon(
+                        Icons.add,
+                        color:
+                            mode == Mode.add ? kPrimaryColor : kDisabledColor,
+                      ),
+                    ),
+                  ),
+                ),
+                Padding(
+                  padding:
+                      const EdgeInsets.symmetric(horizontal: 5, vertical: 10),
+                  child: InkWell(
+                    onTap: () {
+                      _captureBase64().then((value) {
+                        SharedPreferences.getInstance().then((prefs) {
+                          prefs.setString('genImg', value).then((f) {
+                            html.window.open('/art', '_blank');
+                            setState(() {
+                              isLoading = false;
+                            });
+                          });
+                        });
                       });
-                    });
-                  });
-                });
-              },
-              style: ElevatedButton.styleFrom(
-                shape: const StadiumBorder(),
-                primary: kPrimaryColor,
-              ),
-              child: const Text(
-                "Procedi",
-                style: const TextStyle(fontSize: 20),
-              ),
+                    },
+                    child: Container(
+                      width: widget.height * 0.07,
+                      height: widget.height * 0.07,
+                      decoration: BoxDecoration(
+                        color: widget.color,
+                        borderRadius: BorderRadius.circular(100),
+                      ),
+                      child: Icon(
+                        Icons.send,
+                        color: kPrimaryColor,
+                      ),
+                    ),
+                  ),
+                ),
+                const Spacer(),
+              ],
             ),
-          ),
-          const Spacer(),
-        ],
-      ),
-    );
+            const Spacer(),
+          ],
+        ),
+      );
+    } else {
+      return SizedBox(
+        width: widget.width,
+        height: widget.height,
+        child: Column(
+          children: [
+            Row(
+              children: [
+                const Spacer(),
+                Padding(
+                  padding:
+                      const EdgeInsets.symmetric(horizontal: 5, vertical: 10),
+                  child: InkWell(
+                    onTap: () {
+                      if (mode == Mode.edit) {
+                        setState(() {
+                          mode = Mode.none;
+                        });
+                      } else {
+                        setState(() {
+                          mode = Mode.edit;
+                        });
+                      }
+                      widget.onChange(mode);
+                    },
+                    child: Container(
+                      width: widget.height * 0.07,
+                      height: widget.height * 0.07,
+                      decoration: BoxDecoration(
+                        color: widget.color,
+                        border: mode == Mode.edit
+                            ? Border.all(color: kPrimaryColor, width: 5)
+                            : null,
+                        borderRadius: BorderRadius.circular(100),
+                      ),
+                      child: Icon(
+                        Icons.settings,
+                        color:
+                            mode == Mode.edit ? kPrimaryColor : kDisabledColor,
+                      ),
+                    ),
+                  ),
+                ),
+                Padding(
+                  padding:
+                      const EdgeInsets.symmetric(horizontal: 5, vertical: 10),
+                  child: InkWell(
+                    onTap: () {
+                      if (mode == Mode.add) {
+                        setState(() {
+                          mode = Mode.none;
+                        });
+                      } else {
+                        setState(() {
+                          mode = Mode.add;
+                        });
+                      }
+                      widget.onChange(mode);
+                    },
+                    child: Container(
+                      width: widget.height * 0.07,
+                      height: widget.height * 0.07,
+                      decoration: BoxDecoration(
+                        color: widget.color,
+                        border: mode == Mode.add
+                            ? Border.all(color: kPrimaryColor, width: 5)
+                            : null,
+                        borderRadius: BorderRadius.circular(100),
+                      ),
+                      child: Icon(
+                        Icons.add,
+                        color:
+                            mode == Mode.add ? kPrimaryColor : kDisabledColor,
+                      ),
+                    ),
+                  ),
+                ),
+                Padding(
+                  padding:
+                      const EdgeInsets.symmetric(horizontal: 5, vertical: 10),
+                  child: InkWell(
+                    onTap: () {
+                      _captureBase64().then((value) {
+                        SharedPreferences.getInstance().then((prefs) {
+                          prefs.setString('genImg', value).then((f) {
+                            html.window.open('/art', '_blank');
+                            setState(() {
+                              isLoading = false;
+                            });
+                          });
+                        });
+                      });
+                    },
+                    child: Container(
+                      width: widget.height * 0.07,
+                      height: widget.height * 0.07,
+                      decoration: BoxDecoration(
+                        color: widget.color,
+                        borderRadius: BorderRadius.circular(100),
+                      ),
+                      child: Icon(
+                        Icons.send,
+                        color: kPrimaryColor,
+                      ),
+                    ),
+                  ),
+                ),
+                const Spacer(),
+              ],
+            ),
+            Container(
+              width: widget.width * 0.4,
+              height: widget.width * 0.4,
+              decoration: BoxDecoration(
+                color: widget.color,
+                borderRadius: BorderRadius.circular(20),
+              ),
+              child: widget.images.isEmpty
+                  ? const Center(
+                      child: const Text('Seleziona un immagine'),
+                    )
+                  : ClipRRect(
+                      borderRadius: BorderRadius.circular(20),
+                      child: RepaintBoundary(
+                        key: _globalKey,
+                        child: Stack(
+                          children: [
+                            for (ImageSetting image in widget.images)
+                              Positioned(
+                                left: image.x,
+                                top: image.y,
+                                child: EditableImage(
+                                  image: image,
+                                  size: Size(
+                                      min(
+                                          image.width,
+                                          image.width /
+                                              (image.width / widget.width)),
+                                      min(
+                                          image.height,
+                                          image.height /
+                                              (image.height / widget.width))),
+                                  onDragEnd: (offset) {
+                                    setState(() {
+                                      image.x += offset.dx;
+                                      image.y += offset.dy;
+                                    });
+                                  },
+                                ),
+                              ),
+                          ],
+                        ),
+                      ),
+                    ),
+            ),
+            const Spacer(),
+          ],
+        ),
+      );
+    }
   }
 }
