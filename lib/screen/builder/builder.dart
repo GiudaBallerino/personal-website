@@ -7,6 +7,7 @@ import 'package:personal_website/screen/builder/components/edit_window.dart';
 import 'package:personal_website/screen/builder/components/element_sectrion.dart';
 import 'package:personal_website/screen/builder/components/render_furniture_widget.dart';
 import 'package:personal_website/screen/builder/components/row_editor_widget.dart';
+import 'package:personal_website/screen/builder/components/text_editor_widget.dart';
 import 'package:personal_website/utils/services/builder_service.dart';
 import '../../utils/constant.dart';
 
@@ -262,10 +263,10 @@ class _BuilderState extends State<Builder> with TickerProviderStateMixin {
                           ],
                         ),
                       )
-                    else if(menu==Menu.setting)
+                    else if (menu == Menu.setting)
                       Padding(
                         padding:
-                        EdgeInsets.symmetric(horizontal: 10, vertical: 20),
+                            EdgeInsets.symmetric(horizontal: 10, vertical: 20),
                         child: getWidgetEditor(size),
                       )
                   ],
@@ -277,12 +278,13 @@ class _BuilderState extends State<Builder> with TickerProviderStateMixin {
       ],
     );
   }
-  Widget getWidgetEditor(Size size){
-    switch (selected.runtimeType){
+
+  Widget getWidgetEditor(Size size) {
+    switch (selected.runtimeType) {
       case Row:
         return RowEditorWidget(
-          width: size.width*0.09,
-          height: size.height*0.4,
+          width: size.width * 0.09,
+          height: size.height * 0.4,
           row: selected as Row,
           onChanged: (widget) {
             setState(() {
@@ -292,11 +294,95 @@ class _BuilderState extends State<Builder> with TickerProviderStateMixin {
           },
         );
       case Flexible:
-        return Container();
+        return TextEditorWidget(
+          width: size.width * 0.09,
+          height: size.height * 0.4,
+          text: ((selected as Flexible).child as Container).child as Text,
+          onTextChanged: (text) {
+            Flexible tmp = Flexible(
+              fit: (selected as Flexible).fit,
+              child: Container(
+                child: Text(
+                  text,
+                  style: (((selected as Flexible).child as Container).child
+                          as Text)
+                      .style,
+                  textAlign: (((selected as Flexible).child as Container).child
+                          as Text)
+                      .textAlign,
+                ),
+              ),
+            );
+            updateText(selected as Flexible, tmp);
+          },
+          onTextStyleEdited: (style) {
+            Flexible tmp = Flexible(
+              fit: (selected as Flexible).fit,
+              child: Container(
+                child: Text(
+                  (((selected as Flexible).child as Container).child as Text)
+                      .data!,
+                  style: style,
+                  textAlign: (((selected as Flexible).child as Container).child
+                          as Text)
+                      .textAlign,
+                ),
+              ),
+            );
+            updateText(selected as Flexible, tmp);
+          },
+          onTextAlignEdited: (align) {
+            Flexible tmp = Flexible(
+              fit: (selected as Flexible).fit,
+              child: Container(
+                child: Text(
+                  (((selected as Flexible).child as Container).child as Text)
+                      .data!,
+                  style: (((selected as Flexible).child as Container).child
+                          as Text)
+                      .style,
+                  textAlign: align,
+                ),
+              ),
+            );
+            updateText(selected as Flexible, tmp);
+          },
+        );
       case Container:
         return Container();
       default:
         return Container();
+    }
+  }
+
+  void updateText(Flexible child, Flexible newChild) {
+    if (widgetList.contains(child)) {
+      setState(() {
+        widgetList[widgetList.indexOf(selected!)] = newChild;
+        selected = newChild;
+      });
+    } else {
+      for (Widget widget in widgetList) {
+        if (widget.runtimeType == Row &&
+            (widget as Row).children.contains(child)) {
+          setState(() {
+            (widgetList[widgetList.indexOf(widget)] as Row).children[
+                (widgetList[widgetList.indexOf(widget)] as Row)
+                    .children
+                    .indexOf(child)] = newChild;
+            selected = newChild;
+          });
+        } else if (widget.runtimeType == Row &&
+            (widget as Column).children.contains(child)) {
+          setState(() {
+            (widgetList[widgetList.indexOf(widget)] as Column).children[
+                (widgetList[widgetList.indexOf(widget)] as Column)
+                    .children
+                    .indexOf(child)] = newChild;
+            selected = newChild;
+          });
+        }
+      }
     }
   }
 }
