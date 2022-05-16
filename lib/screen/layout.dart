@@ -12,11 +12,11 @@ class Layout extends StatelessWidget {
       body: Container(
         height: double.infinity,
         width: double.infinity,
-        child: CustomPaint(
-          painter: CircularBackgroundPainter(),
+        // child: CustomPaint(
+        //   painter: CircularBackgroundPainter(),
           child: child,
         ),
-      )
+      // )
     );
   }
 }
