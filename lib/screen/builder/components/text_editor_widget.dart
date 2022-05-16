@@ -1,19 +1,34 @@
+import 'dart:ui';
+
 import 'package:flutter/material.dart';
+import 'package:personal_website/utils/constant.dart';
+import 'package:personal_website/utils/controllers/text_span_editing_controller.dart';
 import 'package:text_style_editor/text_style_editor.dart';
 
 class TextEditorWidget extends StatefulWidget {
   TextEditorWidget(
-      {Key? key, required this.width, required this.height, required this.text})
+      {Key? key,
+      required this.width,
+      required this.height,
+      required this.text,
+      required this.onTextAlignEdited,
+      required this.onTextChanged,
+      required this.onTextStyleEdited})
       : super(key: key);
 
   double width;
   double height;
   Text text;
+  Function(String) onTextChanged;
+  Function(TextStyle) onTextStyleEdited;
+  Function(TextAlign) onTextAlignEdited;
   @override
   State<TextEditorWidget> createState() => _TextEditorWidgetState();
 }
 
 class _TextEditorWidgetState extends State<TextEditorWidget> {
+  late TextEditingController _controller;
+
   List<String> fonts = [
     'Billabong',
     'AlexBrush',
@@ -62,67 +77,62 @@ class _TextEditorWidgetState extends State<TextEditorWidget> {
     textStyle = widget.text.style!;
     textAlign = widget.text.textAlign!;
 
+    _controller = TextEditingController(text: widget.text.data);
     super.initState();
   }
 
   @override
   Widget build(BuildContext context) {
     Size size = MediaQuery.of(context).size;
-    return Container(
-      width: widget.width,
-      height: widget.height,
-      child: Column(
-        children: <Widget>[
-          Expanded(
+    return Column(
+      crossAxisAlignment: CrossAxisAlignment.start,
+      mainAxisAlignment: MainAxisAlignment.spaceBetween,
+      children: [
+        TextFormField(
+          controller: _controller,
+          decoration: InputDecoration(
+            filled: true,
+            fillColor: kAltBackgroundColor,
+            hoverColor: kAltBackgroundColor,
+            border: OutlineInputBorder(
+              borderRadius: BorderRadius.circular(15),
+            ),
+            enabledBorder: OutlineInputBorder(
+              borderSide: const BorderSide(color: kPrimaryColor, width: 1.0),
+              borderRadius: BorderRadius.circular(15),
+            ),
+            focusedBorder: OutlineInputBorder(
+              borderSide: const BorderSide(color: kPrimaryColor, width: 2.0),
+              borderRadius: BorderRadius.circular(15),
+            ),
+          ),
+          minLines: 10,
+          maxLines: 10,
+          onChanged: (text) => widget.onTextChanged(text),
+        ),
+        SafeArea(
+          bottom: false,
+          child: Container(
+            height: 300,
+            padding: EdgeInsets.all(10),
             child: Align(
-              alignment: Alignment.center,
-              child: Text(
-                widget.text.data!,
-                style: textStyle,
+              alignment: Alignment.topCenter,
+              child: TextStyleEditor(
+                fonts: fonts,
+                paletteColors: paletteColors,
+                textStyle: textStyle,
                 textAlign: textAlign,
-                maxLines: 10,
+                initialTool: EditorToolbarAction.fontOptionTool,
+                onTextAlignEdited: (align) => widget.onTextAlignEdited(align),
+                onTextStyleEdited: (style) => widget.onTextStyleEdited(style),
+                onCpasLockTaggle: (caps) {
+                  print(caps);
+                },
               ),
             ),
           ),
-          SafeArea(
-            bottom: false,
-            child: Container(
-              height: 300,
-              padding: EdgeInsets.all(10),
-              decoration: BoxDecoration(
-                border: Border.symmetric(
-                  horizontal: BorderSide(
-                    color: Theme.of(context).backgroundColor,
-                  ),
-                ),
-              ),
-              child: Align(
-                alignment: Alignment.topCenter,
-                child: TextStyleEditor(
-                  fonts: fonts,
-                  paletteColors: paletteColors,
-                  textStyle: textStyle,
-                  textAlign: textAlign,
-                  initialTool: EditorToolbarAction.fontFamilyTool,
-                  onTextAlignEdited: (align) {
-                    setState(() {
-                      textAlign = align;
-                    });
-                  },
-                  onTextStyleEdited: (style) {
-                    setState(() {
-                      textStyle = textStyle.merge(style);
-                    });
-                  },
-                  onCpasLockTaggle: (caps) {
-                    print(caps);
-                  },
-                ),
-              ),
-            ),
-          ),
-        ],
-      ),
+        ),
+      ],
     );
   }
 }
