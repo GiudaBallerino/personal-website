@@ -25,6 +25,7 @@ class _RowEditorWidgetState extends State<RowEditorWidget> {
   Widget build(BuildContext context) {
     return Column(
       crossAxisAlignment: CrossAxisAlignment.start,
+      mainAxisAlignment: MainAxisAlignment.spaceBetween,
       children: [
         Row(
           mainAxisAlignment: MainAxisAlignment.spaceBetween,
@@ -34,7 +35,7 @@ class _RowEditorWidgetState extends State<RowEditorWidget> {
               child: Text('crossAxisAlignment: '),
             ),
             SizedBox(
-              width: widget.width*0.6,
+              width: widget.width * 0.6,
               child: DropdownButtonFormField<CrossAxisAlignment>(
                 decoration: InputDecoration(
                   contentPadding: EdgeInsets.zero,
@@ -63,7 +64,7 @@ class _RowEditorWidgetState extends State<RowEditorWidget> {
                   return DropdownMenuItem<CrossAxisAlignment>(
                     value: value,
                     child: SizedBox(
-                      width: widget.width*0.4,
+                      width: widget.width * 0.4,
                       child: Text(value.name),
                     ),
                   );
@@ -82,63 +83,66 @@ class _RowEditorWidgetState extends State<RowEditorWidget> {
             ),
           ],
         ),
-        Row(
-          mainAxisAlignment: MainAxisAlignment.spaceBetween,
-          children: [
-            const Align(
-              alignment: Alignment.centerLeft,
-              child: Text('mainAxisAlignment: '),
-            ),
-            SizedBox(
-              width: widget.width,
-              child: DropdownButtonFormField<MainAxisAlignment>(
-                decoration: InputDecoration(
-                  contentPadding: EdgeInsets.zero,
-                  border: OutlineInputBorder(
-                    borderRadius: BorderRadius.circular(15),
-                  ),
-                  enabledBorder: OutlineInputBorder(
-                    borderSide:
-                        const BorderSide(color: kPrimaryColor, width: 1.0),
-                    borderRadius: BorderRadius.circular(15),
-                  ),
-                  focusedBorder: OutlineInputBorder(
-                    borderSide:
-                        const BorderSide(color: kPrimaryColor, width: 2.0),
-                    borderRadius: BorderRadius.circular(15),
-                  ),
-                ),
-                value: widget.row.mainAxisAlignment,
-                items: <MainAxisAlignment>[
-                  MainAxisAlignment.end,
-                  MainAxisAlignment.center,
-                  MainAxisAlignment.start,
-                  MainAxisAlignment.spaceBetween,
-                  MainAxisAlignment.spaceEvenly,
-                  MainAxisAlignment.spaceAround,
-                ].map<DropdownMenuItem<MainAxisAlignment>>(
-                    (MainAxisAlignment value) {
-                  return DropdownMenuItem<MainAxisAlignment>(
-                    value: value,
-                    child: SizedBox(
-                      width: widget.width*0.8,
-                      child: Text(value.name),
-                    ),
-                  );
-                }).toList(),
-                onChanged: (MainAxisAlignment? mainAxisAlignment) {
-                  widget.onChanged(
-                    Row(
-                      crossAxisAlignment: widget.row.crossAxisAlignment,
-                      mainAxisAlignment: mainAxisAlignment!,
-                      mainAxisSize: widget.row.mainAxisSize,
-                      children: widget.row.children,
-                    ),
-                  );
-                },
+        Padding(
+          padding: EdgeInsets.symmetric(vertical: 5),
+          child: Row(
+            mainAxisAlignment: MainAxisAlignment.spaceBetween,
+            children: [
+              const Align(
+                alignment: Alignment.centerLeft,
+                child: Text('mainAxisAlignment: '),
               ),
-            ),
-          ],
+              SizedBox(
+                width: widget.width,
+                child: DropdownButtonFormField<MainAxisAlignment>(
+                  decoration: InputDecoration(
+                    contentPadding: EdgeInsets.zero,
+                    border: OutlineInputBorder(
+                      borderRadius: BorderRadius.circular(15),
+                    ),
+                    enabledBorder: OutlineInputBorder(
+                      borderSide:
+                          const BorderSide(color: kPrimaryColor, width: 1.0),
+                      borderRadius: BorderRadius.circular(15),
+                    ),
+                    focusedBorder: OutlineInputBorder(
+                      borderSide:
+                          const BorderSide(color: kPrimaryColor, width: 2.0),
+                      borderRadius: BorderRadius.circular(15),
+                    ),
+                  ),
+                  value: widget.row.mainAxisAlignment,
+                  items: <MainAxisAlignment>[
+                    MainAxisAlignment.end,
+                    MainAxisAlignment.center,
+                    MainAxisAlignment.start,
+                    MainAxisAlignment.spaceBetween,
+                    MainAxisAlignment.spaceEvenly,
+                    MainAxisAlignment.spaceAround,
+                  ].map<DropdownMenuItem<MainAxisAlignment>>(
+                      (MainAxisAlignment value) {
+                    return DropdownMenuItem<MainAxisAlignment>(
+                      value: value,
+                      child: SizedBox(
+                        width: widget.width * 0.8,
+                        child: Text(value.name),
+                      ),
+                    );
+                  }).toList(),
+                  onChanged: (MainAxisAlignment? mainAxisAlignment) {
+                    widget.onChanged(
+                      Row(
+                        crossAxisAlignment: widget.row.crossAxisAlignment,
+                        mainAxisAlignment: mainAxisAlignment!,
+                        mainAxisSize: widget.row.mainAxisSize,
+                        children: widget.row.children,
+                      ),
+                    );
+                  },
+                ),
+              ),
+            ],
+          ),
         ),
         Row(
           mainAxisAlignment: MainAxisAlignment.spaceBetween,
@@ -148,7 +152,7 @@ class _RowEditorWidgetState extends State<RowEditorWidget> {
               child: Text('mainAxisSize: '),
             ),
             SizedBox(
-              width:widget.width*0.5,
+              width: widget.width * 0.5,
               child: DropdownButtonFormField<MainAxisSize>(
                 decoration: InputDecoration(
                   contentPadding: EdgeInsets.zero,
@@ -174,7 +178,7 @@ class _RowEditorWidgetState extends State<RowEditorWidget> {
                   return DropdownMenuItem<MainAxisSize>(
                     value: value,
                     child: SizedBox(
-                      width: widget.width*0.3,
+                      width: widget.width * 0.3,
                       child: Text(value.name),
                     ),
                   );
