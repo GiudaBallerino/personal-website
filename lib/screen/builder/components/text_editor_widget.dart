@@ -6,22 +6,18 @@ import 'package:personal_website/utils/controllers/text_span_editing_controller.
 import 'package:text_style_editor/text_style_editor.dart';
 
 class TextEditorWidget extends StatefulWidget {
-  TextEditorWidget(
+  const TextEditorWidget(
       {Key? key,
-      required this.width,
-      required this.height,
       required this.text,
       required this.onTextAlignEdited,
       required this.onTextChanged,
       required this.onTextStyleEdited})
       : super(key: key);
 
-  double width;
-  double height;
-  Text text;
-  Function(String) onTextChanged;
-  Function(TextStyle) onTextStyleEdited;
-  Function(TextAlign) onTextAlignEdited;
+  final Text text;
+  final Function(String) onTextChanged;
+  final Function(TextStyle) onTextStyleEdited;
+  final Function(TextAlign) onTextAlignEdited;
   @override
   State<TextEditorWidget> createState() => _TextEditorWidgetState();
 }
@@ -29,7 +25,7 @@ class TextEditorWidget extends StatefulWidget {
 class _TextEditorWidgetState extends State<TextEditorWidget> {
   late TextEditingController _controller;
 
-  List<String> fonts = [
+  final List<String> fonts = [
     'Billabong',
     'AlexBrush',
     'Allura',
@@ -47,7 +43,7 @@ class _TextEditorWidgetState extends State<TextEditorWidget> {
     'SEASRN',
     'Windsong',
   ];
-  List<Color> paletteColors = [
+  final List<Color> paletteColors = [
     Colors.black,
     Colors.white,
     Color(int.parse('0xffEA2027')),
@@ -83,7 +79,6 @@ class _TextEditorWidgetState extends State<TextEditorWidget> {
 
   @override
   Widget build(BuildContext context) {
-    Size size = MediaQuery.of(context).size;
     return Column(
       crossAxisAlignment: CrossAxisAlignment.start,
       mainAxisAlignment: MainAxisAlignment.spaceBetween,
