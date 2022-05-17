@@ -3,8 +3,8 @@ import 'dart:ui';
 import 'package:flutter/material.dart';
 import 'package:json_dynamic_widget/json_dynamic_widget_schemas.dart';
 import 'package:personal_website/models/widget_furniture.dart';
-import 'package:personal_website/screen/builder/components/edit_window.dart';
-import 'package:personal_website/screen/builder/components/element_sectrion.dart';
+import 'package:personal_website/screen/builder/components/element_section.dart';
+import 'package:personal_website/screen/builder/components/image_editor_widget.dart';
 import 'package:personal_website/screen/builder/components/render_furniture_widget.dart';
 import 'package:personal_website/screen/builder/components/row_editor_widget.dart';
 import 'package:personal_website/screen/builder/components/text_editor_widget.dart';
@@ -101,23 +101,23 @@ class _BuilderState extends State<Builder> with TickerProviderStateMixin {
                                   }
                                 },
                               )
-                            else if (widget.runtimeType == Container)
-                              RenderWidget(
-                                maxWidth: size.width * 0.5,
-                                furniture: widget as Container,
-                                selected: selected,
-                                onTap: (data) {
-                                  if (selected == data) {
-                                    setState(() {
-                                      selected = null;
-                                    });
-                                  } else {
-                                    setState(() {
-                                      selected = data;
-                                    });
-                                  }
-                                },
-                              )
+                            // else if (widget.runtimeType == Container) //image without flexible
+                            //   RenderWidget(
+                            //     maxWidth: size.width * 0.5,
+                            //     furniture: widget as Container,
+                            //     selected: selected,
+                            //     onTap: (data) {
+                            //       if (selected == data) {
+                            //         setState(() {
+                            //           selected = null;
+                            //         });
+                            //       } else {
+                            //         setState(() {
+                            //           selected = data;
+                            //         });
+                            //       }
+                            //     },
+                            //   )
                             else if (widget.runtimeType == Row)
                               RenderWidget(
                                 maxWidth: size.width * 0.5,
@@ -139,25 +139,13 @@ class _BuilderState extends State<Builder> with TickerProviderStateMixin {
 
                                   switch (data.type) {
                                     case WidgetType.text:
-                                      child = Flexible(
-                                        fit: FlexFit.loose,
-                                        child: Container(
-                                          child: Text(
-                                            'Lorem ipsum',
-                                            textAlign: TextAlign.center,
-                                            style: TextStyle(fontSize: 15),
-                                          ),
-                                        ),
-                                      );
+                                      child = BuilderService.defaultText;
                                       break;
                                     case WidgetType.image:
-                                      child = Container(
-                                        child: Image.asset(
-                                            'assets/img/sticker/flower_0.webp'),
-                                      );
+                                      child = BuilderService.defaultImage;
                                       break;
                                     case WidgetType.row:
-                                      child = Row();
+                                      child = BuilderService.defaultRow;
                                       break;
                                   }
                                   setState(() {
@@ -178,26 +166,13 @@ class _BuilderState extends State<Builder> with TickerProviderStateMixin {
                   Widget widget;
                   switch (data.type) {
                     case WidgetType.text:
-                      widget = Flexible(
-                        fit: FlexFit.loose,
-                        child: Container(
-                          child: Text(
-                            'Lorem ipsum',
-                            textAlign: TextAlign.center,
-                            style: TextStyle(fontSize: 15),
-                          ),
-                        ),
-                      );
+                      widget = BuilderService.defaultText;
                       break;
                     case WidgetType.image:
-                      widget = Container(
-                        child: Image.asset('assets/img/sticker/flower_0.webp'),
-                      );
+                      widget = BuilderService.defaultImage;
                       break;
                     case WidgetType.row:
-                      widget = Row(
-                        children: [],
-                      );
+                      widget = BuilderService.defaultRow;
                       break;
                   }
                   setState(() {
@@ -280,7 +255,7 @@ class _BuilderState extends State<Builder> with TickerProviderStateMixin {
   }
 
   Widget getWidgetEditor(Size size) {
-    switch (selected.runtimeType) {
+    switch (BuilderService.getWidgetType(selected!)) {
       case Row:
         return RowEditorWidget(
           width: size.width * 0.09,
@@ -293,63 +268,28 @@ class _BuilderState extends State<Builder> with TickerProviderStateMixin {
             });
           },
         );
-      case Flexible:
+      case Text:
         return TextEditorWidget(
-          width: size.width * 0.09,
-          height: size.height * 0.4,
           text: ((selected as Flexible).child as Container).child as Text,
           onTextChanged: (text) {
-            Flexible tmp = Flexible(
-              fit: (selected as Flexible).fit,
-              child: Container(
-                child: Text(
-                  text,
-                  style: (((selected as Flexible).child as Container).child
-                          as Text)
-                      .style,
-                  textAlign: (((selected as Flexible).child as Container).child
-                          as Text)
-                      .textAlign,
-                ),
-              ),
-            );
-            updateText(selected as Flexible, tmp);
+            updateText(selected as Flexible,
+                BuilderService.changeTextData(text, selected!) as Flexible);
           },
           onTextStyleEdited: (style) {
-            Flexible tmp = Flexible(
-              fit: (selected as Flexible).fit,
-              child: Container(
-                child: Text(
-                  (((selected as Flexible).child as Container).child as Text)
-                      .data!,
-                  style: style,
-                  textAlign: (((selected as Flexible).child as Container).child
-                          as Text)
-                      .textAlign,
-                ),
-              ),
-            );
-            updateText(selected as Flexible, tmp);
+            updateText(selected as Flexible,
+                BuilderService.changeTextStyle(style, selected!) as Flexible);
           },
           onTextAlignEdited: (align) {
-            Flexible tmp = Flexible(
-              fit: (selected as Flexible).fit,
-              child: Container(
-                child: Text(
-                  (((selected as Flexible).child as Container).child as Text)
-                      .data!,
-                  style: (((selected as Flexible).child as Container).child
-                          as Text)
-                      .style,
-                  textAlign: align,
-                ),
-              ),
-            );
-            updateText(selected as Flexible, tmp);
+            updateText(selected as Flexible,
+                BuilderService.changeTextAlign(align, selected!) as Flexible);
           },
         );
-      case Container:
-        return Container();
+      case Image:
+        return ImageEditorWidget(
+          width: size.width * 0.09,
+          height: size.height * 0.4,
+          image: ((selected as Flexible).child as Container).child as Image,
+        );
       default:
         return Container();
     }
