@@ -48,27 +48,27 @@ class _RenderWidgetState extends State<RenderWidget> {
           onTap: () => widget.onTap(widget.furniture),
         ),
       );
-    }else if (widget.furniture.runtimeType == Container) {
-        Container container = widget.furniture as Container;
-        return Flexible(
-          fit: FlexFit.loose,
-          child: InkWell(
-            child: Container(
-              padding: EdgeInsets.all(5),
-              decoration: BoxDecoration(
-                color: container.color,
-                border: Border.all(
-                  color: widget.selected == widget.furniture
-                      ? kPrimaryColor
-                      : kDisabledColor,
-                  width: 3,
-                ),
-              ),
-              child: container.child,
-            ),
-            onTap: () => widget.onTap(widget.furniture),
-          ),
-        );
+    // }else if (widget.furniture.runtimeType == Container) {
+    //     Container container = widget.furniture as Container;
+    //     return Flexible(
+    //       fit: FlexFit.loose,
+    //       child: InkWell(
+    //         child: Container(
+    //           padding: EdgeInsets.all(5),
+    //           decoration: BoxDecoration(
+    //             color: container.color,
+    //             border: Border.all(
+    //               color: widget.selected == widget.furniture
+    //                   ? kPrimaryColor
+    //                   : kDisabledColor,
+    //               width: 3,
+    //             ),
+    //           ),
+    //           child: container.child,
+    //         ),
+    //         onTap: () => widget.onTap(widget.furniture),
+    //       ),
+    //     );
     } else if (widget.furniture.runtimeType == Row) {
       Row row = widget.furniture as Row;
       return DragTarget<WidgetFurniture>(
